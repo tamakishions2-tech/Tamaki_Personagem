@@ -73,7 +73,7 @@ function conectar(){
 async function testar(){
   aviso('testando…');
   try{const r=await fetch(cfg.url+'/ping'),d=await r.json();
-    aviso(d.kokoro?'Servidor ok, voz Kokoro pronta.':'Servidor ok, mas sem Kokoro: vai usar a voz do navegador.')}
+    const vs=[d.kokoro&&'Kokoro',...(d.piper||[]).map(n=>n+' (treinada)')].filter(Boolean);aviso(vs.length?'Servidor ok, vozes prontas: '+vs.join(', ')+'.':'Servidor ok, mas sem voz: vai usar a voz do navegador.')}
   catch(e){aviso('Não achei o servidor. Ele está rodando no Termux?')}}
 
 /* ---------- camadas ---------- */
@@ -175,10 +175,12 @@ function html(){return `
 <textarea id="pk-cmd" readonly rows="4" style="margin:8px 0">${esc(CMD())}</textarea>
 <div class="ab"><button class="b" data-a="cmd">Copiar comando</button></div>
 <p class="m">Depois de instalado, para atualizar basta digitar <code>voz --atualizar</code> no Termux.</p></details>
+<details><summary>Treinar a voz própria da Tamaki (Piper)</summary>
+<p class="m">Grave as frases no <a href="gravador.html">Gravador de voz</a>, treine no notebook (Colab ou Kaggle, grátis) e depois rode <code>voz --importar</code> no Termux. Para usar aqui, escreva <code>piper</code> no campo Voz.</p></details>
 <details><summary>Voz e conexão com o Termux</summary>
-${sel('motor','Motor de voz',[['termux','Termux (Kokoro)'],['browser','Voz do navegador']],cfg.motor,'c')}
+${sel('motor','Motor de voz',[['termux','Termux (Kokoro ou voz treinada)'],['browser','Voz do navegador']],cfg.motor,'c')}
 <label class="pk-f"><span>Endereço do servidor</span><input data-c="url" value="${esc(cfg.url)}" inputmode="url"></label>
-<label class="pk-f"><span>Voz (id do Kokoro)</span><input data-c="voice" value="${esc(cfg.voice)}"></label>
+<label class="pk-f"><span>Voz (piper = Tamaki treinada, ou id do Kokoro, ex.: pf_dora)</span><input data-c="voice" value="${esc(cfg.voice)}"></label>
 ${rg('speed','Velocidade',.6,1.5,.05,cfg.speed,'c')}${rg('pause','Pausa entre frases (s)',0,1.5,.05,cfg.pause,'c')}
 <button class="g" data-a="ping">Testar conexão</button>
 <p class="m">No Termux, <code>falar "oi gente"</code> manda o texto para cá e a Tamaki fala.</p></details></div>

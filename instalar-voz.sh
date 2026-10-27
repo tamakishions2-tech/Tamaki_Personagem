@@ -44,6 +44,9 @@ if [ ! -d "$HOME/storage/downloads" ] && command -v termux-setup-storage >/dev/n
   termux-setup-storage
 fi
 
+echo "== Voz treinada (Piper) =="
+python "$HOME/kokoro/tamaki_voz.py" --importar 2>/dev/null || echo "Nenhuma voz treinada ainda. Depois do treino, ponha o .zip em Download/tamaki_personagem/voz-treinada e rode: voz --importar"
+
 echo "== 4/4 Conferindo =="
 python -c "import numpy, onnxruntime; print('python ok, onnxruntime', onnxruntime.__version__)" 2>&1 | grep -v -i warn
 (espeak-ng -q --ipa -v pt-br "bom dia" 2>/dev/null || espeak -q --ipa -v pt-br "bom dia")
@@ -52,3 +55,5 @@ echo "Pronto!"
 echo '  voz "Gente, nem te conto!"   gera a voz (sai em Download/tamaki_personagem/Baixado)'
 echo "  palco                        liga a voz dentro do app (deixe o Termux aberto)"
 echo "  voz --atualizar              baixa a versao nova do seu site"
+echo "  voz --importar               instala a voz treinada (Piper)"
+echo '  voz -v piper "Oi gente!"     fala com a voz treinada'

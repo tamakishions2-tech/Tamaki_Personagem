@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d0b1e"><meta name="color-scheme" content="dark"><link rel="icon" href="icon-192.png"><title>Gravador de voz · Tamaki</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d0b1e;--pn:#171431;--ln:#2c2757;--tx:#ece6f6;--mu:#9a94c2;--ac:#ffae5c;--te:#5fd9cf;--rd:#ff6b81;color-scheme:dark}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse 90% 38% at 50% -6%,rgba(255,174,92,.16),transparent 70%),var(--bg);color:var(--tx);font:16px/1.5 Nunito,system-ui,sans-serif}
+.w{max-width:760px;margin:0 auto;padding:18px 16px 40px;box-sizing:border-box}
+h1{font:15px/1.4 "Press Start 2P",monospace;color:var(--ac);margin:0;text-shadow:0 0 18px rgba(255,174,92,.45)}
+.m{color:var(--mu);font-size:14px;margin:6px 0 0}
+button,input,textarea,select{font:inherit;color:inherit}
+input,textarea,select{background:transparent;border:1px solid var(--ln);border-radius:6px;padding:8px;width:100%;box-sizing:border-box}option{background:#171431}
+textarea{min-height:160px;resize:vertical;font:13px/1.5 ui-monospace,Menlo,monospace}
+.c{background:var(--pn);border:1px solid var(--ln);border-radius:10px;padding:14px;margin:12px 0}
+.ab{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:10px}
+.b,.g{border-radius:8px;padding:9px 14px;font-weight:800;cursor:pointer}
+.b{background:var(--ac);color:#1b1230;border:0}.g{background:none;border:1px solid var(--ln)}
+.b:disabled,.g:disabled{opacity:.45;cursor:default}
+.rec{background:var(--rd);color:#1b1230;border:0}
+.fr{font-size:22px;font-weight:800;line-height:1.35;margin:10px 0;min-height:3em}
+.bar{height:8px;background:var(--ln);border-radius:4px;overflow:hidden}.bar i{display:block;height:100%;background:var(--te);width:0}
+.nv{height:10px;background:var(--ln);border-radius:5px;overflow:hidden;margin-top:10px}.nv i{display:block;height:100%;width:0;background:var(--te);transition:width .05s}
+.st{font-size:14px;color:var(--mu)}.ok{color:var(--te)}.er{color:var(--rd)}
+label.f{display:block;margin-top:10px;font-size:14px;color:var(--mu)}
+details summary{cursor:pointer;font-weight:800}
+a{color:var(--te);font-weight:700}
+ol{padding-left:20px;margin:6px 0}li{margin:4px 0}
+:focus-visible{outline:2px solid var(--te);outline-offset:2px}
+</style></head><body><div class="w">
+<h1>GRAVADOR DE VOZ</h1>
+<p class="m">Monte o pacote de treino da voz da Tamaki (Piper). Tudo fica neste aparelho até você baixar o .zip.</p>
+
+<div class="c">
+  <b>Como funciona</b>
+  <ol class="m">
+    <li>Grave as frases (ou gere com o Kokoro do Termux). Quanto mais, melhor: 150 já dá voz boa, 300+ dá dicção ótima.</li>
+    <li>Toque em <b>Baixar pacote (.zip)</b>.</li>
+    <li>Abra o notebook de treino <a href="https://colab.research.google.com/github/tamakishions2-tech/Tamaki_Personagem/blob/main/treinar/treinar_voz_piper.ipynb" target="_blank" rel="noopener">no Colab</a> ou <a href="treinar/treinar_voz_piper.ipynb" download>baixe o arquivo</a> para importar no Kaggle (GPU grátis) e envie o .zip.</li>
+    <li>No fim, ponha o .zip da voz em <code>Download/tamaki_personagem/voz-treinada</code> e rode <code>voz --importar</code> no Termux.</li>
+  </ol>
+</div>
+
+<div class="c">
+  <label class="f">De onde vem a voz
+    <select id="fonte"><option value="mic">Microfone (a sua voz ou de quem vai dublar)</option><option value="kokoro">Kokoro no Termux (voz sintética da Tamaki)</option></select></label>
+  <div id="opKokoro" hidden>
+    <label class="f">Endereço do Termux<input id="url" value="http://127.0.0.1:8765" inputmode="url"></label>
+    <label class="f">Voz do Kokoro (tamaki = a mistura padrão)<input id="voz" value="tamaki"></label>
+    <p class="m">Ligue o servidor no Termux com <code>palco</code>. A voz treinada vai copiar o timbre do Kokoro, mas fala muito mais rápido e sem os cortes.</p>
+  </div>
+  <div id="opMic">
+    <p class="m">Dicas para dicção ótima: lugar silencioso, sem eco (um armário com roupas é ótimo), celular sempre à mesma distância (um palmo), mesmo tom e energia em todas as frases, e leia exatamente o que está escrito.</p>
+  </div>
+</div>
+
+<div class="c">
+  <div class="ab" style="margin:0;justify-content:space-between"><b id="pos">Frase 1 de 1</b><span class="st" id="feitas"></span></div>
+  <div class="bar" style="margin-top:8px"><i id="prog"></i></div>
+  <div class="fr" id="frase" aria-live="polite"></div>
+  <div class="nv" aria-hidden="true"><i id="nivel"></i></div>
+  <p class="st" id="msg">Pronto.</p>
+  <div class="ab">
+    <button class="g" id="ant" aria-label="Frase anterior">◀</button>
+    <button class="b rec" id="gravar">● Gravar</button>
+    <button class="g" id="ouvir" disabled>▶ Ouvir</button>
+    <button class="g" id="prox" aria-label="Próxima frase">▶▶</button>
+    <button class="g" id="pular">Próxima sem gravada</button>
+  </div>
+  <div class="ab" id="lote" hidden><button class="b" id="gerarTodas">Gerar todas as que faltam</button><button class="g" id="pararLote" disabled>Parar</button></div>
+</div>
+
+<div class="c">
+  <div class="ab" style="margin:0"><button class="b" id="baixar">Baixar pacote (.zip)</button><button class="g" id="apagarEsta">Apagar esta gravação</button><button class="g" id="apagarTudo">Apagar todas</button></div>
+  <p class="m" id="tam"></p>
+</div>
+
+<details class="c"><summary>Editar a lista de frases</summary>
+  <p class="m">Uma frase por linha. Escreva os números por extenso ("três", não "3"). Mudar a lista não apaga gravações, mas elas ficam presas ao número da linha.</p>
+  <textarea id="lista" aria-label="Lista de frases"></textarea>
+  <div class="ab"><button class="b" id="salvarLista">Salvar lista</button><button class="g" id="restaurar">Voltar à lista original</button></div>
+</details>
+</div>
+<script>
+const $ = s => document.querySelector(s), TAXA = 22050;
+const ls = {get(k, d){ try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }};
+let frases = [], i = ls.get("grav-i", 0), feitas = new Map(), gravando = null, lote = false, tocando = null;
+
+/* ---------- banco (IndexedDB): gravações por número da frase ---------- */
+let banco = null;
+function abrir(){ return new Promise(ok => { try { const r = indexedDB.open("tamaki-gravador", 1);
+  r.onupgradeneeded = () => r.result.createObjectStore("wav");
+  r.onsuccess = () => ok(banco = r.result); r.onerror = () => ok(null); } catch (e) { ok(null); } }); }
+function op(modo, f){ return new Promise((ok, erro) => { if (!banco) return ok(null);
+  const t = banco.transaction("wav", modo), q = f(t.objectStore("wav")); t.oncomplete = () => ok(q && q.result); t.onerror = () => erro(t.error); }); }
+const guardar = (n, v) => op("readwrite", s => s.put(v, n));
+const ler = n => op("readonly", s => s.get(n));
+const apagar = n => op("readwrite", s => s.delete(n));
+async function carregarFeitas(){ feitas = new Map();
+  const chaves = await op("readonly", s => s.getAllKeys()) || [];
+  for (const k of chaves) { const v = await ler(k); if (v) feitas.set(k, v); } }
+
+/* ---------- áudio: mono, 22050 Hz, corta silêncio das pontas, WAV 16 bits ---------- */
+async function paraWav(blob){
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  const buf = await ctx.decodeAudioData(await blob.arrayBuffer()); ctx.close();
+  const n = Math.ceil(buf.duration * TAXA), off = new OfflineAudioContext(1, n, TAXA), src = off.createBufferSource();
+  src.buffer = buf; src.connect(off.destination); src.start();
+  let x = (await off.startRendering()).getChannelData(0);
+  let pico = 0; for (const v of x) pico = Math.max(pico, Math.abs(v));
+  const lim = Math.max(0.02, pico * 0.08), folga = Math.round(0.25 * TAXA);
+  let a = 0, b = x.length - 1; while (a < b && Math.abs(x[a]) < lim) a++; while (b > a && Math.abs(x[b]) < lim) b--;
+  x = x.subarray(Math.max(0, a - folga), Math.min(x.length, b + folga));
+  const dv = new DataView(new ArrayBuffer(44 + x.length * 2)), txt = (o, s) => [...s].forEach((c, j) => dv.setUint8(o + j, c.charCodeAt(0)));
+  txt(0, "RIFF"); dv.setUint32(4, 36 + x.length * 2, true); txt(8, "WAVEfmt "); dv.setUint32(16, 16, true); dv.setUint16(20, 1, true); dv.setUint16(22, 1, true);
+  dv.setUint32(24, TAXA, true); dv.setUint32(28, TAXA * 2, true); dv.setUint16(32, 2, true); dv.setUint16(34, 16, true); txt(36, "data"); dv.setUint32(40, x.length * 2, true);
+  for (let j = 0; j < x.length; j++) dv.setInt16(44 + j * 2, Math.max(-1, Math.min(1, x[j])) * 32767, true);
+  return {wav: new Blob([dv], {type: "audio/wav"}), seg: x.length / TAXA, pico};
+}
+
+/* ---------- zip sem compressão (o áudio quase não comprime) ---------- */
+const CRC = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+function crc32(u){ let c = 0xFFFFFFFF; for (let j = 0; j < u.length; j++) c = CRC[(c ^ u[j]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
+async function zip(arqs){ // [{nome, dados: Uint8Array}]
+  const partes = [], central = []; let pos = 0; const enc = new TextEncoder();
+  for (const a of arqs) { const nome = enc.encode(a.nome), crc = crc32(a.dados), h = new DataView(new ArrayBuffer(30));
+    h.setUint32(0, 0x04034b50, true); h.setUint16(4, 20, true); h.setUint16(6, 0x0800, true); h.setUint32(14, crc, true);
+    h.setUint32(18, a.dados.length, true); h.setUint32(22, a.dados.length, true); h.setUint16(26, nome.length, true);
+    partes.push(h, nome, a.dados);
+    const c = new DataView(new ArrayBuffer(46)); c.setUint32(0, 0x02014b50, true); c.setUint16(4, 20, true); c.setUint16(6, 20, true); c.setUint16(8, 0x0800, true);
+    c.setUint32(16, crc, true); c.setUint32(20, a.dados.length, true); c.setUint32(24, a.dados.length, true); c.setUint16(28, nome.length, true); c.setUint32(42, pos, true);
+    central.push(c, nome); pos += 30 + nome.length + a.dados.length; }
+  const tam = central.reduce((s, p) => s + p.byteLength, 0), fim = new DataView(new ArrayBuffer(22));
+  fim.setUint32(0, 0x06054b50, true); fim.setUint16(8, arqs.length, true); fim.setUint16(10, arqs.length, true); fim.setUint32(12, tam, true); fim.setUint32(16, pos, true);
+  return new Blob([...partes, ...central, fim], {type: "application/zip"});
+}
+
+/* ---------- tela ---------- */
+const msg = (t, cls) => { $("#msg").textContent = t; $("#msg").className = "st " + (cls || ""); };
+function tela(manter){
+  i = Math.max(0, Math.min(i, frases.length - 1)); ls.set("grav-i", i);
+  $("#frase").textContent = frases[i] || "(lista vazia)";
+  $("#pos").textContent = `Frase ${i + 1} de ${frases.length}`;
+  const ok = frases.filter((_, n) => feitas.has(n)).length;
+  $("#feitas").textContent = `${ok} prontas`; $("#prog").style.width = (frases.length ? ok / frases.length * 100 : 0) + "%";
+  const g = feitas.get(i); $("#ouvir").disabled = !g;
+  if (!manter && !gravando && !lote) msg(g ? `Gravada (${g.seg.toFixed(1)} s). Toque em Gravar para refazer.` : "Ainda não gravada.", g ? "ok" : "");
+  let seg = 0; feitas.forEach((v, n) => { if (n < frases.length) seg += v.seg; });
+  $("#tam").textContent = `Total: ${Math.floor(seg / 60)} min ${Math.round(seg % 60)} s de áudio. Meta boa: 15 min ou mais.`;
+  const k = $("#fonte").value == "kokoro"; $("#opKokoro").hidden = !k; $("#opMic").hidden = k; $("#lote").hidden = !k;
+  $("#gravar").textContent = gravando ? "■ Parar" : k ? "Gerar esta" : "● Gravar";
+}
+async function salvarFrase(n, blob){
+  const r = await paraWav(blob);
+  if (r.seg < 0.4) { msg("Ficou curto demais ou sem som. Tente de novo.", "er"); return false; }
+  await guardar(n, {texto: frases[n], wav: r.wav, seg: r.seg}); feitas.set(n, {texto: frases[n], wav: r.wav, seg: r.seg});
+  if ($("#fonte").value != "mic") msg(`Salva (${r.seg.toFixed(1)} s).`, "ok");
+  else if (r.pico > 0.99) msg("Salva, mas estourou (muito alto). Afaste um pouco o celular e regrave.", "er");
+  else if (r.pico < 0.1) msg("Salva, mas ficou baixinha. Chegue um pouco mais perto e regrave.", "er");
+  else msg(`Salva (${r.seg.toFixed(1)} s).`, "ok");
+  return true;
+}
+
+/* ---------- microfone ---------- */
+async function gravar(){
+  if (gravando) { gravando.parar(); return; }
+  let fluxo;
+  try { fluxo = await navigator.mediaDevices.getUserMedia({audio: {echoCancellation: false, noiseSuppression: false, autoGainControl: false, channelCount: 1}}); }
+  catch (e) { msg("Sem acesso ao microfone. Permita o microfone para este site.", "er"); return; }
+  const rec = new MediaRecorder(fluxo), pedacos = [], n = i;
+  const ctx = new AudioContext(), an = ctx.createAnalyser(); ctx.createMediaStreamSource(fluxo).connect(an); an.fftSize = 1024;
+  const dados = new Float32Array(an.fftSize); let raf;
+  const medir = () => { an.getFloatTimeDomainData(dados); let p = 0; for (const v of dados) p = Math.max(p, Math.abs(v));
+    $("#nivel").style.width = Math.min(100, p * 100) + "%"; $("#nivel").style.background = p > .95 ? "var(--rd)" : "var(--te)"; raf = requestAnimationFrame(medir); };
+  rec.ondataavailable = e => e.data.size && pedacos.push(e.data);
+  rec.onstop = async () => { cancelAnimationFrame(raf); $("#nivel").style.width = 0; fluxo.getTracks().forEach(t => t.stop()); ctx.close(); gravando = null; tela();
+    msg("Processando…"); try { if (await salvarFrase(n, new Blob(pedacos, {type: rec.mimeType}))) { if (n == i && i < frases.length - 1) i++; tela(true); } } catch (e) { msg("Erro ao salvar: " + e.message, "er"); } };
+  gravando = {parar: () => rec.state != "inactive" && rec.stop()};
+  rec.start(); medir(); tela(); msg("Gravando… leia a frase e toque em Parar.", "er");
+}
+
+/* ---------- Kokoro (Termux) ---------- */
+async function gerarKokoro(n){
+  const r = await fetch($("#url").value.replace(/\/+$/, "") + "/tts", {method: "POST", headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({text: frases[n], voice: $("#voz").value.trim() || "tamaki", pause: 0})});
+  if (!r.ok) throw new Error("o Termux respondeu " + r.status);
+  return salvarFrase(n, await r.blob());
+}
+async function gerarUma(){ msg("Gerando no Termux…");
+  try { if (await gerarKokoro(i) && i < frases.length - 1) i++; tela(true); } catch (e) { msg("Não consegui falar com o Termux (" + e.message + "). O comando palco está ligado?", "er"); } }
+async function gerarTodas(){
+  lote = true; $("#pararLote").disabled = false; $("#gerarTodas").disabled = true;
+  try { for (let n = 0; n < frases.length && lote; n++) { if (feitas.has(n)) continue; i = n; tela(); msg(`Gerando ${n + 1} de ${frases.length}…`); await gerarKokoro(n); }
+    if (lote) msg("Todas geradas!", "ok"); }
+  catch (e) { msg("Parou: " + e.message + ". O comando palco está ligado?", "er"); }
+  lote = false; $("#pararLote").disabled = true; $("#gerarTodas").disabled = false; tela(true);
+}
+
+/* ---------- pacote ---------- */
+async function baixar(){
+  const lista = frases.map((t, n) => [n, feitas.get(n)]).filter(([, v]) => v);
+  if (lista.length < 20) return msg(`Só ${lista.length} gravadas. Grave pelo menos 20 (o ideal é 150 ou mais).`, "er");
+  msg("Montando o pacote…");
+  const arqs = [], linhas = [];
+  for (const [n, v] of lista) { const nome = String(n + 1).padStart(4, "0") + ".wav";
+    arqs.push({nome: "wavs/" + nome, dados: new Uint8Array(await v.wav.arrayBuffer())});
+    linhas.push(nome + "|" + frases[n].replace(/\|/g, " ").trim()); }
+  arqs.push({nome: "metadata.csv", dados: new TextEncoder().encode(linhas.join("\n") + "\n")});
+  const a = document.createElement("a"); a.href = URL.createObjectURL(await zip(arqs)); a.download = "tamaki_dataset.zip";
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+  msg(`Pacote com ${lista.length} frases baixado: tamaki_dataset.zip`, "ok");
+}
+
+/* ---------- início ---------- */
+async function listaOriginal(){ try { return (await (await fetch("frases-treino.txt")).text()); } catch (e) { return "Gente, nem te conto!"; } }
+const separar = t => t.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+(async () => {
+  await abrir(); if (!banco) msg("Este navegador não deixa guardar as gravações. Baixe o pacote antes de fechar.", "er");
+  $("#lista").value = ls.get("grav-lista", null) || await listaOriginal(); frases = separar($("#lista").value);
+  $("#fonte").value = ls.get("grav-fonte", "mic"); $("#url").value = ls.get("grav-url", $("#url").value); $("#voz").value = ls.get("grav-voz", $("#voz").value);
+  await carregarFeitas(); tela();
+})();
+$("#fonte").onchange = () => { ls.set("grav-fonte", $("#fonte").value); tela(); };
+$("#url").onchange = () => ls.set("grav-url", $("#url").value); $("#voz").onchange = () => ls.set("grav-voz", $("#voz").value);
+$("#gravar").onclick = () => $("#fonte").value == "kokoro" ? gerarUma() : gravar();
+$("#ant").onclick = () => { if (!gravando) { i--; tela(); } };
+$("#prox").onclick = () => { if (!gravando) { i++; tela(); } };
+$("#pular").onclick = () => { if (gravando) return; const n = frases.findIndex((_, k) => !feitas.has(k)); if (n >= 0) { i = n; tela(); } else msg("Todas as frases já estão prontas!", "ok"); };
+$("#ouvir").onclick = () => { const g = feitas.get(i); if (!g) return; if (tocando) tocando.pause(); tocando = new Audio(URL.createObjectURL(g.wav)); tocando.play(); };
+$("#gerarTodas").onclick = gerarTodas; $("#pararLote").onclick = () => { lote = false; };
+$("#baixar").onclick = baixar;
+$("#apagarEsta").onclick = async () => { if (!feitas.has(i) || !confirm("Apagar a gravação desta frase?")) return; await apagar(i); feitas.delete(i); tela(); };
+$("#apagarTudo").onclick = async () => { if (!feitas.size || !confirm(`Apagar as ${feitas.size} gravações? Não dá para desfazer.`)) return; await op("readwrite", s => s.clear()); feitas.clear(); tela(); };
+$("#salvarLista").onclick = () => { frases = separar($("#lista").value); ls.set("grav-lista", $("#lista").value); tela(true); msg(`Lista salva: ${frases.length} frases.`, "ok"); };
+$("#restaurar").onclick = async () => { if (!confirm("Voltar à lista original de frases?")) return; $("#lista").value = await listaOriginal(); ls.set("grav-lista", null); frases = separar($("#lista").value); tela(); };
+</script>
+</body></html>

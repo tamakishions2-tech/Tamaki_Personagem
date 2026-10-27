@@ -51,7 +51,12 @@ def parametros(d):
         pausa = float(d.get("pause")) if d.get("pause") is not None else P["pausa"]
     except (TypeError, ValueError):
         pausa = P["pausa"]
-    if voz in ("", "pf_dora", "padrao", "tamaki"):
+    if voz in ("", "pf_dora", "padrao", "tamaki") and not estado["motor"].kokoro:
+        voz = "piper"  # sem Kokoro instalado, a voz da Tamaki é a treinada
+    if tv.eh_piper(voz):  # voz treinada: já tem o timbre, sem tom extra
+        tom, energia = 0.0, 0.0
+        vel = vel if vel is not None else 1.0
+    elif voz in ("", "pf_dora", "padrao", "tamaki"):
         voz, tom, energia = P["voz"], P["tom"], P["energia"]
         vel = P["vel"] if vel is None or abs(vel - 1.05) < 1e-6 else vel
     else:
@@ -115,7 +120,9 @@ class H(BaseHTTPRequestHandler):
         rota = self.path.split("?")[0]
         if rota == "/ping":
             pronto.wait(30)
-            self._json(200, {"ok": True, "kokoro": bool(estado["motor"]), "erro": estado["erro"]})
+            m = estado["motor"]
+            self._json(200, {"ok": True, "kokoro": bool(m and m.kokoro), "piper": list(m.pipers) if m else [],
+                             "erro": estado["erro"]})
         elif rota == "/events":
             self.send_response(200)
             self._cors()
