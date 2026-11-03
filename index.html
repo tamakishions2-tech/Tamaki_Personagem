@@ -159,6 +159,29 @@ nav.fn button.on{background:var(--ac);border-color:var(--ac);color:#1b1230}
 .doc pre{grid-column:1/3;white-space:pre-wrap;max-height:260px;overflow:auto;background:#06050f;border-radius:8px;padding:10px;font:13px/1.5 ui-monospace,monospace;margin:0}
 .aviso{border-color:var(--ac)}
 
+
+/* estúdio de imagem */
+.selo{display:inline-flex;align-items:center;gap:8px;font-weight:800;font-size:15px}
+.selo i{width:10px;height:10px;border-radius:50%;background:var(--mu)}
+.selo.bom i{background:#6fe39a}.selo.vai i{background:var(--ac);animation:pul 1.2s infinite}.selo.mal i{background:var(--er)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip2{background:transparent;border:1px solid var(--ln);border-radius:20px;padding:7px 13px;font-weight:700;font-size:14px;color:var(--mu)}
+.chip2.on{background:var(--te);border-color:var(--te);color:#0d1f1e}
+.final{font:13px/1.5 ui-monospace,Menlo,monospace;color:var(--mu);background:var(--bg);border-radius:8px;padding:8px;margin-top:6px;word-break:break-word}
+.gerar{width:100%;padding:14px;font-size:17px;border-radius:12px;margin-top:4px}
+.gerar:disabled{opacity:.55}
+.barra{height:8px;border-radius:4px;background:var(--bg);overflow:hidden;margin-top:10px}
+.barra i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--te),var(--ac));transition:width .3s}
+.res{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.res.hist{grid-template-columns:repeat(3,1fr);gap:4px}
+.res button{border:0;padding:0;background:var(--pn2);border-radius:8px;overflow:hidden;aspect-ratio:4/5}
+.res.hist button{border-radius:4px;aspect-ratio:1}
+.res img{width:100%;height:100%;object-fit:cover;display:block}
+.vista{width:100%;border-radius:10px;display:block;margin-bottom:8px}
+details summary{cursor:pointer;font-weight:800;color:var(--mu);padding:4px 0}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+input[type=range]{width:100%;accent-color:var(--te)}
+
 /* folha que sobe de baixo */
 .fundo{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:20;display:flex;align-items:flex-end;justify-content:center}
 .sh{background:var(--pn);border:1px solid var(--ln);border-bottom:0;border-radius:18px 18px 0 0;width:100%;max-width:640px;max-height:88%;overflow-y:auto;padding:8px 16px calc(18px + env(safe-area-inset-bottom,0px))}
@@ -236,7 +259,7 @@ const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 function gv(k,d){for(const m of S.mods)for(const x of m.f)if(x[2]==k){const v=String(x[1]).trim().split(/\s+/)[0];if(v)return v}return d}
 function prompt(){let o='Você é a assistente criativa do projeto da personagem Tamaki Shion. Use esta ficha como fonte única sobre ela e o universo dela. Não invente fatos que contradigam a ficha; quando eu pedir uma mudança, devolva só os campos alterados.\n';
 S.mods.filter(m=>m.inc).forEach(m=>{o+='\n## '+m.t+'\n'+m.f.map(x=>'- '+x[0]+': '+x[1]).join('\n')+'\n'});
-const R=docs.filter(d=>d.usar&&d.texto);if(R.length)o+='\n## Documentos de referência\n'+R.map(d=>'### '+d.nome+'\n'+d.texto).join('\n\n')+'\n';
+const R=docs.filter(d=>d.usar&&pareceTexto(d.texto));if(R.length)o+='\n## Documentos de referência\n'+R.map(d=>'### '+d.nome+'\n'+d.texto).join('\n\n')+'\n';
 return o+'\n## Links e ferramentas\n'+S.links.map(l=>'- '+l.n+(l.u?' ('+l.u+')':'')+(l.d?': '+l.d:'')).join('\n')}
 
 // garante que fichas antigas ganhem o cartão e o perfil sem perder nada
@@ -314,7 +337,7 @@ function quemE(){const p=S.perfil;let o='Você É '+p.nome+'. Fale sempre em pri
  cartao().f.filter(x=>x[1]&&!['apar','estilo','lora','marca','voz'].includes(x[2])).forEach(x=>o+='- '+x[0]+': '+x[1]+'\n');
  if(p.sobre)o+='- Bio do perfil: '+p.sobre+'\n';
  S.mods.filter(m=>m.inc&&!['cartao','voz','visual'].includes(m.id)).forEach(m=>{o+='\n## '+m.t+'\n'+m.f.filter(x=>x[1]).map(x=>'- '+x[0]+': '+x[1]).join('\n')+'\n'});
- let resta=5000;const R=docs.filter(d=>d.usar&&d.texto);if(R.length){o+='\n## Trechos de referência sobre você\n';for(const d of R){if(resta<200)break;const t=d.texto.slice(0,resta);resta-=t.length;o+='### '+d.nome+'\n'+t+'\n'}}
+ let resta=5000;const R=docs.filter(d=>d.usar&&pareceTexto(d.texto));if(R.length){o+='\n## Trechos de referência sobre você\n';for(const d of R){if(resta<200)break;const t=d.texto.slice(0,resta);resta-=t.length;o+='### '+d.nome+'\n'+t+'\n'}}
  return o}
 function contexto(){const n=new Date(),h=n.getHours();let o='\n## Agora\nHoje é '+DIAS[n.getDay()]+', '+n.toLocaleDateString('pt-BR')+', '+n.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})+' ('+(h<6?'madrugada':h<12?'manhã':h<18?'tarde':'noite')+').\n';
  const di=msgs.filter(m=>m.tipo=='diario').slice(-12);if(di.length)o+='\n## Seu diário (o que aconteceu com você, do mais antigo ao mais novo)\n'+di.map(m=>'- '+new Date(m.t).toLocaleDateString('pt-BR')+': '+m.texto).join('\n')+'\n';
@@ -348,7 +371,7 @@ function bolha(m){const de=m.de;let h='';
  const th=(m.imgs||[]).length?`<div class="thumbs">${m.imgs.map((b,i)=>`<img src="${urlDe(b)}" alt="Imagem ${i+1}">`).join('')}</div>`:'';
  if(de=='ela'&&m.tipo=='noticia'&&m.dados){const d=m.dados;h=`<span class="cap">📰 ${esc(d.titulo||'Notícia')}</span><p>${br(d.resumo)}</p><div class="coment"><p>${br(d.comentario)}</p></div>${d.conferir?`<div class="conf">⚠️ ${br(d.conferir)}</div>`:''}`}
  else if(de=='ela'&&m.tipo=='post'&&m.dados){const d=m.dados;h=`<p>${br(d.ideia)}</p>${polaroid(m)}<span class="estado ${d.status=='postado'?'feito':'rasc'}">${d.status=='postado'?'✅ Postado em '+new Date(d.postadoEm).toLocaleDateString('pt-BR'):'Rascunho'}</span>
-   <div class="acoes"><button class="bt" data-a="cpimg" data-id="${m.id}">🎨 Copiar prompt da imagem</button><button class="bt" data-a="cppost" data-id="${m.id}">📋 Copiar legenda</button><button class="bt" data-a="foto" data-id="${m.id}">🖼 ${m.img?'Trocar':'Pôr'} imagem</button>${d.status!='postado'?`<button class="bt p" data-a="postei" data-id="${m.id}">✅ Postei</button>`:''}</div>`}
+   <div class="acoes"><button class="bt" data-a="cpimg" data-id="${m.id}">🎨 Copiar prompt da imagem</button><button class="bt" data-a="cppost" data-id="${m.id}">📋 Copiar legenda</button><button class="bt" data-a="gerar" data-id="${m.id}">🎨 Gerar aqui</button><button class="bt" data-a="foto" data-id="${m.id}">🖼 ${m.img?'Trocar':'Pôr'} imagem</button>${d.status!='postado'?`<button class="bt p" data-a="postei" data-id="${m.id}">✅ Postei</button>`:''}</div>`}
  else{h=({diario:'<span class="cap">📓 Diário dela</span>',noticia:de=='eu'?'<span class="cap">📰 Notícia para ela ler</span>':'',post:de=='eu'?'<span class="cap">📸 Pedido de post</span>':''}[m.tipo]||'')+th+(m.texto?`<p>${br(m.texto)}</p>`:(m.tipo=='post'?'<p>Ela escolhe.</p>':''))}
  return `<div class="msg ${de} ${m.tipo}" data-id="${m.id}">${h}<span class="hora">${hora(m.t)}${m.estrela?' ⭐':''}</span></div>`}
 function desenhaChat(rola=true){const l=$('#lista');
@@ -391,7 +414,7 @@ let alvoFoto=null;
 $('#lista').onclick=async e=>{const b=e.target.closest('[data-a]');
  if(b){e.stopPropagation();const m=msgs.find(x=>x.id==b.dataset.id);if(!m)return;const a=b.dataset.a;
   if(a=='cpimg')cp(promptImg(m.dados));if(a=='cppost')cp(textoPost(m.dados));if(a=='foto'){alvoFoto=m.id;$('#fImg').click()}if(a=='postei')marcaPostado(m);
-  if(a=='refaz'){const p=msgs.find(x=>x.id==m.pedido);if(p)responder(p,m.id)}return}
+  if(a=='refaz'){const p=msgs.find(x=>x.id==m.pedido);if(p)responder(p,m.id)}if(a=='gerar')abreEstudio(m.id);return}
  const el=e.target.closest('.msg[data-id]');if(el)acoesMsg(el.dataset.id)};
 $('#fImg').onchange=async e=>{const f=e.target.files[0];e.target.value='';const m=msgs.find(x=>x.id==alvoFoto);if(!f||!m)return;try{m.img=await reduz(f,1440,.9);await guarda(m);desenhaChat(false);desenhaPerfilSeAberto();toast('Imagem no post')}catch(x){toast('Não consegui abrir a imagem')}};
 async function marcaPostado(m){m.dados.status='postado';m.dados.postadoEm=Date.now();await guarda(m);desenhaChat(false);desenhaPerfilSeAberto();
@@ -425,15 +448,15 @@ let aoFechar=null;
 function folha(html,cancel){fecha();aoFechar=cancel||null;const f=document.createElement('div');f.className='fundo';f.innerHTML=`<div class="sh" role="dialog" aria-modal="true"><div class="puxa"></div>${html}</div>`;f.onclick=e=>{if(e.target==f)fecha()};$('#shs').appendChild(f);return f.querySelector('.sh')}
 function fecha(semCancelar){const c=aoFechar;aoFechar=null;$('#shs').innerHTML='';if(c&&!semCancelar)c()}
 let pilha=[],anim=false;
-function abrePg(id){pilha.push(id);anim=true;desenhaPgs()}
+function abrePg(id){pilha.push(id);anim=true;desenhaPgs();if(id=='imagem'&&!K.url&&!K.procurando&&EST.codigo)kProcurar()}
 function voltaPg(){pilha.pop();anim=false;desenhaPgs();if(!pilha.length)desenhaChat(false)}
 function desenhaPgs(){const ant=$('#pgs .pg:last-of-type'),rol=ant&&!anim?{id:ant.dataset.pg,y:ant.scrollTop}:null;$('#pgs').innerHTML=pilha.map((id,i)=>`<section class="pg${anim&&i==pilha.length-1?' anima':''}" data-pg="${id}" style="z-index:${10+i}" aria-label="${esc(TIT[id]||'')}"><div class="in"><header><button class="ic" data-volta aria-label="Voltar">←</button><h2>${esc(TIT[id]||'')}</h2></header><div class="cx"></div></div></section>`).join('');
  pilha.forEach(id=>{const sec=$(`#pgs [data-pg="${id}"]`);sec.querySelector('[data-volta]').onclick=voltaPg;PG[id](sec.querySelector('.cx'))});
  document.querySelectorAll('#pgs .pg').forEach((s,i,a)=>s.style.display=i==a.length-1?'block':'none');const nv=$('#pgs .pg:last-of-type');if(rol&&nv&&nv.dataset.pg==rol.id)nv.scrollTop=rol.y;anim=false;topo()}
 function desenhaPerfilSeAberto(){if(pilha.length&&pilha[pilha.length-1]=='perfil')desenhaPgs()}
-const TIT={perfil:'',cartao:'Cartão de personalidade',ficha:'Ficha completa',cerebro:'Cérebro',treino:'Material de treino',copia:'Cópia de segurança',diario:'Diário dela',redes:'Redes dela'};
+const TIT={perfil:'',cartao:'Cartão de personalidade',ficha:'Ficha completa',cerebro:'Cérebro',treino:'Material de treino',copia:'Cópia de segurança',diario:'Diário dela',redes:'Redes dela',imagem:'Estúdio de imagem'};
 $('#abrePerfil').onclick=()=>abrePg('perfil');
-$('#menuTop').onclick=()=>{const sh=folha(`<button class="linha" data-g="perfil"><span class="e">👤</span>Perfil dela</button><button class="linha" data-g="diario"><span class="e">📓</span>Diário dela</button><button class="linha" data-g="cartao"><span class="e">📇</span>Cartão de personalidade</button><button class="linha" data-g="cerebro"><span class="e">🧠</span><span>Cérebro<small>${nomeCer()}</small></span></button><button class="linha" data-g="ficha"><span class="e">📚</span>Ficha completa</button>`);
+$('#menuTop').onclick=()=>{const sh=folha(`<button class="linha" data-g="perfil"><span class="e">👤</span>Perfil dela</button><button class="linha" data-g="diario"><span class="e">📓</span>Diário dela</button><button class="linha" data-g="cartao"><span class="e">📇</span>Cartão de personalidade</button><button class="linha" data-g="imagem"><span class="e">🎨</span>Estúdio de imagem</button><button class="linha" data-g="cerebro"><span class="e">🧠</span><span>Cérebro<small>${nomeCer()}</small></span></button><button class="linha" data-g="ficha"><span class="e">📚</span>Ficha completa</button>`);
  sh.onclick=e=>{const b=e.target.closest('[data-g]');if(b){fecha();abrePg(b.dataset.g)}}};
 
 const PG={};
@@ -443,10 +466,11 @@ PG.perfil=cx=>{const p=S.perfil,posts=msgs.filter(m=>m.de=='ela'&&m.tipo=='post'
   <input class="campo nome" id="pNome" value="${esc(p.nome)}" aria-label="Nome"><input class="campo rec" id="pRec" value="${esc(p.recado)}" aria-label="Recado" placeholder="Recado">
   <div class="atalhos"><button class="at" data-v="conversa"><span>💬</span>Conversar</button><button class="at" data-v="post"><span>📸</span>Pedir post</button><button class="at" data-g="cartao"><span>📇</span>Cartão</button></div></div>
   <div class="sec"><h3>Sobre</h3><textarea id="pSobre" aria-label="Sobre" style="border:0;padding:0;background:none">${esc(p.sobre)}</textarea></div>
-  <div class="sec"><h3>Próximo post${prox?`<button data-id="${prox.id}" data-a="cppost">Copiar legenda</button>`:''}</h3>${prox?`<div class="mini">${polaroid(prox,1)}<div><p style="margin:0 0 6px">${br(prox.dados.ideia)}</p><p class="m" style="white-space:pre-wrap">${esc(prox.dados.legenda)}</p><div class="acoes"><button class="bt" data-a="cpimg" data-id="${prox.id}">🎨 Prompt</button><button class="bt" data-a="foto" data-id="${prox.id}">🖼 Imagem</button><button class="bt p" data-a="postei" data-id="${prox.id}">✅ Postei</button></div></div></div>`:`<p class="m" style="margin:0">Nenhum rascunho. Toque em 📸 Pedir post e ela decide o próximo.</p>`}</div>
+  <div class="sec"><h3>Próximo post${prox?`<button data-id="${prox.id}" data-a="cppost">Copiar legenda</button>`:''}</h3>${prox?`<div class="mini">${polaroid(prox,1)}<div><p style="margin:0 0 6px">${br(prox.dados.ideia)}</p><p class="m" style="white-space:pre-wrap">${esc(prox.dados.legenda)}</p><div class="acoes"><button class="bt" data-a="cpimg" data-id="${prox.id}">🎨 Prompt</button><button class="bt" data-a="gerar" data-id="${prox.id}">🎨 Gerar</button><button class="bt" data-a="foto" data-id="${prox.id}">🖼 Imagem</button><button class="bt p" data-a="postei" data-id="${prox.id}">✅ Postei</button></div></div></div>`:`<p class="m" style="margin:0">Nenhum rascunho. Toque em 📸 Pedir post e ela decide o próximo.</p>`}</div>
   <div class="sec"><h3>Redes<button data-g="redes">Editar</button></h3>${p.redes.map(r=>/^https?:\/\//i.test(r.u)?`<a class="rede" href="${esc(r.u)}" target="_blank" rel="noopener noreferrer"><span class="e">${esc(r.e)}</span><span><b>${esc(r.n)}</b><small>${esc(r.u.replace(/^https?:\/\/(www\.)?/,''))}</small></span></a>`:`<button class="rede linha" data-g="redes" style="padding:9px 0"><span class="e">${esc(r.e)}</span><span><b>${esc(r.n)}</b><small>Toque para pôr o link</small></span></button>`).join('')}</div>
   <div class="sec"><h3>Postados (${feitos.length})</h3>${feitos.length?`<div class="grade">${feitos.map(m=>`<button data-id="${m.id}" data-abre aria-label="${esc(m.dados.ideia)}">${m.img?`<img src="${urlDe(m.img)}" alt="">`:esc(m.dados.ideia.slice(0,60))}</button>`).join('')}</div>`:'<p class="m" style="margin:0">Quando você tocar em ✅ Postei, o post aparece aqui.</p>'}</div>
   <div class="sec"><button class="linha" data-g="diario"><span class="e">📓</span><span>Diário dela<small>${nd} ${nd==1?'página':'páginas'}</small></span></button>
+   <button class="linha" data-g="imagem"><span class="e">🎨</span><span>Estúdio de imagem<small>Gera as fotos dela no Kaggle</small></span></button>
    <button class="linha" data-g="cerebro"><span class="e">🧠</span><span>Cérebro<small>${nomeCer()}</small></span></button>
    <button class="linha" data-g="treino"><span class="e">🎓</span><span>Material de treino<small>${ns} ${ns==1?'resposta marcada':'respostas marcadas'} com ⭐</small></span></button>
    <button class="linha" data-g="ficha"><span class="e">📚</span><span>Ficha completa<small>Módulos, documentos e prompt para a Reunião</small></span></button>
@@ -455,7 +479,7 @@ PG.perfil=cx=>{const p=S.perfil,posts=msgs.filter(m=>m.de=='ela'&&m.tipo=='post'
  cx.querySelector('#pFoto').onclick=()=>$('#fFoto').click();
  cx.onclick=e=>{const g=e.target.closest('[data-g]');if(g){e.preventDefault();return abrePg(g.dataset.g)}
   const v=e.target.closest('[data-v]');if(v){modo=v.dataset.v;desenhaModos();pilha=[];desenhaPgs();$('#txt').focus();return}
-  const a=e.target.closest('[data-a]');if(a){const m=msgs.find(x=>x.id==a.dataset.id);if(!m)return;if(a.dataset.a=='cpimg')cp(promptImg(m.dados));if(a.dataset.a=='cppost')cp(textoPost(m.dados));if(a.dataset.a=='foto'){alvoFoto=m.id;$('#fImg').click()}if(a.dataset.a=='postei')marcaPostado(m);return}
+  const a=e.target.closest('[data-a]');if(a){const m=msgs.find(x=>x.id==a.dataset.id);if(!m)return;if(a.dataset.a=='cpimg')cp(promptImg(m.dados));if(a.dataset.a=='cppost')cp(textoPost(m.dados));if(a.dataset.a=='foto'){alvoFoto=m.id;$('#fImg').click()}if(a.dataset.a=='postei')marcaPostado(m);if(a.dataset.a=='gerar')abreEstudio(m.id);return}
   const ab=e.target.closest('[data-abre]');if(ab){const m=msgs.find(x=>x.id==ab.dataset.id);if(m){const sh=folha(`${polaroid(m)}<div class="acoes"><button class="bt" id="gC">📋 Copiar legenda</button><button class="bt" id="gF">🖼 Trocar imagem</button></div>`);sh.querySelector('#gC').onclick=()=>cp(textoPost(m.dados));sh.querySelector('#gF').onclick=()=>{fecha();alvoFoto=m.id;$('#fImg').click()}}}}};
 $('#fFoto').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;try{S.perfil.foto=await b64(await reduz(f,320,.85));save();topo();desenhaPgs();toast('Foto trocada')}catch(x){toast('Não consegui abrir a imagem')}};
 
@@ -514,6 +538,130 @@ function zip(arqs){const enc=new TextEncoder(),partes=[],cent=[];let off=0;for(c
  const d=new DataView(new ArrayBuffer(46));d.setUint32(0,0x02014b50,true);d.setUint16(4,20,true);d.setUint16(6,20,true);d.setUint32(16,c,true);d.setUint32(20,a.dados.length,true);d.setUint32(24,a.dados.length,true);d.setUint16(28,n.length,true);d.setUint32(42,off,true);cent.push(d.buffer,n);off+=30+n.length+a.dados.length}
  const tam=cent.reduce((s,x)=>s+(x.byteLength||x.length),0),f=new DataView(new ArrayBuffer(22));f.setUint32(0,0x06054b50,true);f.setUint16(8,arqs.length,true);f.setUint16(10,arqs.length,true);f.setUint32(12,tam,true);f.setUint32(16,off,true);return new Blob([...partes,...cent,f.buffer],{type:'application/zip'})}
 
+
+/* =========================================================
+   Estúdio de imagem: fala com o notebook "Gerador de Imagem" do Kaggle.
+   O notebook avisa o endereço dele no ntfy.sh (tópico = código de ligação),
+   igual ao Estúdio de voz.
+   Rotas: GET /estado · POST /gerar · GET /tarefa/<id>
+   ========================================================= */
+const IMGS=banco('tamaki-imagens','imgs');
+let historico=[],ultimas=[],alvoPost=null,cenaPost='',gerando=false,progresso={v:0,t:''};
+const NEG='lowres, bad anatomy, bad hands, text, error, missing finger, extra digits, fewer digits, cropped, worst quality, low quality, low score, bad score, average score, signature, watermark, username, blurry, logo';
+const FORMATOS={retrato:{n:'Post 4:5',w:896,h:1152},quadrado:{n:'Quadrado',w:1024,h:1024},story:{n:'Story 9:16',w:768,h:1344},paisagem:{n:'Deitada',w:1216,h:832}};
+let EST=Object.assign({codigo:'',formato:'retrato',qtd:2,lora:'',forca:.9,passos:28,cfg:5,semente:'',negativo:NEG,juntar:true,prompt:''},(()=>{try{return JSON.parse(localStorage.getItem('tamaki-img-cfg'))||{}}catch(e){return{}}})());
+const salvaEst=()=>{try{localStorage.setItem('tamaki-img-cfg',JSON.stringify(EST))}catch(e){}};
+const K={url:null,estado:null,procurando:false,msg:'',selo:['','desligado']};
+
+async function responde(u){const c=new AbortController(),t=setTimeout(()=>c.abort(),7000);try{return(await fetch(u+'/',{signal:c.signal})).ok}catch(e){return false}finally{clearTimeout(t)}}
+async function kProcurar(){if(K.procurando)return;
+ if(!EST.codigo){K.selo=['mal','falta o código'];K.msg='Escreva o código de ligação. Ele fica no começo da célula do Kaggle, na linha CODIGO = "tamaki-img-…".';return redesenhaEst()}
+ K.procurando=true;K.selo=['vai','procurando o Kaggle'];redesenhaEst();
+ try{const r=await fetch('https://ntfy.sh/'+encodeURIComponent(EST.codigo)+'/json?poll=1&since=12h');
+  const ms=(await r.text()).trim().split('\n').filter(Boolean).map(l=>{try{const m=JSON.parse(l);return m.event==='message'?JSON.parse(m.message):null}catch(e){return null}}).filter(Boolean);
+  const fechados=new Set(ms.filter(m=>m.estado==='encerrado').map(m=>m.url));
+  const links=[...new Set(ms.filter(m=>m.estado==='ligado'&&m.url&&!fechados.has(m.url)).map(m=>m.url).reverse())];
+  let achou=null;for(const u of links)if(await responde(u)){achou=u;break}
+  if(achou){K.url=achou;await kEstado()}
+  else{K.url=null;K.estado=null;K.selo=['mal','Kaggle desligado'];K.msg=ms.length?'Nenhuma sessão no ar. Rode o notebook Gerador de Imagem com MODO = "gerar" e espere ele dizer que ligou.':'Nenhum aviso do Kaggle ainda com esse código.'}}
+ catch(e){K.selo=['mal','sem internet?'];K.msg='Não consegui procurar: '+e.message}
+ K.procurando=false;redesenhaEst()}
+async function kApi(rota,corpo){if(!K.url)throw new Error('o Kaggle não está ligado');
+ const r=await fetch(K.url+rota,{method:corpo?'POST':'GET',headers:Object.assign({'x-codigo':EST.codigo},corpo?{'Content-Type':'application/json'}:{}),body:corpo?JSON.stringify(corpo):undefined}).catch(()=>{K.url=null;throw new Error('perdi a ligação com o Kaggle')});
+ const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.erro||('erro '+r.status));return j}
+async function kEstado(){try{K.estado=await kApi('/estado');K.selo=['bom','ligado ao Kaggle'+(K.estado.gpu?' · '+K.estado.gpu:'')];K.msg='';
+  const ls=K.estado.loras||[];if(EST.lora&&!ls.includes(EST.lora))EST.lora='';if(!EST.lora&&ls.length)EST.lora=ls[ls.length-1];salvaEst()}
+ catch(e){K.selo=['mal','Kaggle desligado'];K.msg=e.message}}
+
+const qual='masterpiece, high score, great score, absurdres';
+function promptFinal(){const base=(EST.prompt||'').trim();if(!EST.juntar)return base;
+ const g=cv('lora');return ['1girl',g,'solo',g?'':cv('apar'),base,cv('estilo'),qual].map(x=>String(x||'').trim().replace(/[.,\s]+$/,'')).filter(Boolean).join(', ')}
+function abreEstudio(postId){const m=msgs.find(x=>x.id==postId);if(m&&m.dados){alvoPost=m.id;EST.prompt=m.dados.prompt_imagem||'';cenaPost=m.dados.cena||m.dados.ideia||'';salvaEst()}
+ if(pilha[pilha.length-1]!='imagem')abrePg('imagem');else desenhaPgs()}
+function barra(){const b=$('#eBar'),t=$('#eTxt'),p=$('#eProg');if(p)p.classList.remove('hide');if(b)b.style.width=Math.round(progresso.v*100)+'%';if(t)t.textContent=progresso.t}
+function redesenhaEst(){if(pilha[pilha.length-1]=='imagem')desenhaPgs()}
+
+PG.imagem=cx=>{const ls=(K.estado&&K.estado.loras)||[],post=msgs.find(x=>x.id==alvoPost),prox=msgs.filter(m=>m.de=='ela'&&m.tipo=='post'&&m.dados&&m.dados.status!='postado').slice(-1)[0];
+ cx.innerHTML=`<div class="c"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><span class="selo ${K.selo[0]}"><i></i>${esc(K.selo[1])}</span><button class="g" id="kBusca" ${K.procurando?'disabled':''}>↻ Procurar</button></div>
+  ${K.msg?`<p class="m">${esc(K.msg)}</p>`:''}
+  <details ${EST.codigo&&K.url?'':'open'}><summary>Código de ligação</summary><input id="kCod" value="${esc(EST.codigo)}" placeholder="tamaki-img-…" autocomplete="off" spellcheck="false"><p class="m">É o mesmo que está na linha CODIGO da célula do Kaggle. Só precisa pôr uma vez.</p></details></div>
+ <div class="c">${post?`<div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start"><div><span class="cap">Para o post</span><p style="margin:0">${esc(post.dados.ideia)}</p></div><button class="x" id="sPost" aria-label="Desligar do post">×</button></div>`
+   :prox?`<button class="g" id="uPost">📸 Usar o próximo post</button>`:'<p class="m" style="margin:0">Sem post ligado: o que você gerar fica só no histórico.</p>'}
+  <label class="lbl" for="ePr">O que desenhar <small>(em inglês: cena, ação, roupa, lugar)</small></label>
+  <textarea id="ePr" placeholder="sitting on a balcony at sunset, holding a mug, plush chicken beside her">${esc(EST.prompt)}</textarea>
+  ${post&&cenaPost?`<p class="m">Em português: ${esc(cenaPost)}</p>`:''}
+  <div class="ab"><label><input type="checkbox" id="eJu" ${EST.juntar?'checked':''}> Juntar a Tamaki, o estilo e a qualidade</label></div>
+  <div class="final" id="eFin">${esc(promptFinal())}</div>
+  ${!cv('lora')?'<p class="m">Sem palavra-gatilho no Cartão, vai a aparência escrita. Quando o LoRA estiver pronto, ponha <b>tmkshion</b> no Cartão.</p>':''}
+  <label class="lbl">Formato</label><div class="chips" id="eFo">${Object.entries(FORMATOS).map(([k,f])=>`<button class="chip2 ${k==EST.formato?'on':''}" data-f="${k}">${f.n}</button>`).join('')}</div>
+  <label class="lbl">Quantas imagens</label><div class="chips" id="eQt">${[1,2,3,4].map(n=>`<button class="chip2 ${n==EST.qtd?'on':''}" data-q="${n}">${n}</button>`).join('')}</div>
+  <label class="lbl" for="eLo">Estilo treinado (LoRA)</label><select id="eLo"><option value="">Nenhum (modelo puro)</option>${ls.map(l=>`<option ${l==EST.lora?'selected':''}>${esc(l)}</option>`).join('')}</select>
+  ${K.url&&!ls.length?'<p class="m">O Kaggle ainda não achou nenhum LoRA treinado.</p>':''}
+  <label class="lbl" for="eFz">Força do LoRA: <span id="eFzV">${EST.forca}</span> <small>· mais alto = mais parecida, menos flexível</small></label><input type="range" id="eFz" min="0.3" max="1.3" step="0.05" value="${EST.forca}">
+  <details style="margin-top:12px"><summary>Avançado</summary><div class="duo"><div><label class="lbl" for="ePa">Passos</label><input id="ePa" type="number" min="10" max="60" value="${EST.passos}"></div><div><label class="lbl" for="eCf">CFG</label><input id="eCf" type="number" min="1" max="12" step="0.5" value="${EST.cfg}"></div></div>
+   <label class="lbl" for="eSe">Semente <small>(vazio = aleatória)</small></label><input id="eSe" type="number" value="${esc(EST.semente)}" placeholder="aleatória">
+   <label class="lbl" for="eNe">O que evitar</label><textarea id="eNe">${esc(EST.negativo)}</textarea><div class="ab"><button class="g" id="eNeR">Voltar ao padrão</button></div></details></div>
+ <button class="b gerar" id="eGo" ${gerando||!K.url?'disabled':''}>${gerando?'Gerando…':'🎨 Gerar'}</button>
+ <div class="${gerando||progresso.t?'':'hide'}" id="eProg"><div class="barra"><i id="eBar" style="width:${Math.round(progresso.v*100)}%"></i></div><p class="m" id="eTxt">${esc(progresso.t)}</p></div>
+ ${!K.url?'<p class="m">Ligue o notebook no Kaggle para gerar. Enquanto isso, dá para preparar o pedido.</p>':''}
+ ${ultimas.length?`<div class="sec"><h3>Acabou de sair</h3><div class="res">${ultimas.map(i=>`<button data-im="${i.id}" aria-label="Ver imagem"><img src="${urlDe(i.blob)}" alt=""></button>`).join('')}</div></div>`:''}
+ <div class="sec"><h3>Histórico (${historico.length})</h3>${historico.length?`<div class="res hist">${historico.slice().reverse().map(i=>`<button data-im="${i.id}" aria-label="Ver imagem"><img src="${urlDe(i.blob)}" alt="" loading="lazy"></button>`).join('')}</div>`:'<p class="m" style="margin:0">As imagens geradas ficam guardadas aqui no aparelho.</p>'}</div>`;
+ const fin=()=>{const e=cx.querySelector('#eFin');if(e)e.textContent=promptFinal()};
+ cx.querySelector('#kBusca').onclick=kProcurar;
+ cx.querySelector('#kCod').onchange=e=>{EST.codigo=e.target.value.trim();salvaEst();K.url=null;kProcurar()};
+ const up=cx.querySelector('#uPost');if(up)up.onclick=()=>abreEstudio(prox.id);
+ const sp=cx.querySelector('#sPost');if(sp)sp.onclick=()=>{alvoPost=null;cenaPost='';desenhaPgs()};
+ cx.querySelector('#ePr').oninput=e=>{EST.prompt=e.target.value;salvaEst();fin()};
+ cx.querySelector('#eJu').onchange=e=>{EST.juntar=e.target.checked;salvaEst();fin()};
+ cx.querySelector('#eFo').onclick=e=>{const b=e.target.closest('[data-f]');if(b){EST.formato=b.dataset.f;salvaEst();desenhaPgs()}};
+ cx.querySelector('#eQt').onclick=e=>{const b=e.target.closest('[data-q]');if(b){EST.qtd=+b.dataset.q;salvaEst();desenhaPgs()}};
+ cx.querySelector('#eLo').onchange=e=>{EST.lora=e.target.value;salvaEst()};
+ cx.querySelector('#eFz').oninput=e=>{EST.forca=+e.target.value;cx.querySelector('#eFzV').textContent=EST.forca;salvaEst()};
+ cx.querySelector('#ePa').onchange=e=>{EST.passos=Math.max(10,Math.min(60,+e.target.value||28));salvaEst()};
+ cx.querySelector('#eCf').onchange=e=>{EST.cfg=Math.max(1,Math.min(12,+e.target.value||5));salvaEst()};
+ cx.querySelector('#eSe').onchange=e=>{EST.semente=e.target.value.trim();salvaEst()};
+ cx.querySelector('#eNe').oninput=e=>{EST.negativo=e.target.value;salvaEst()};
+ cx.querySelector('#eNeR').onclick=()=>{EST.negativo=NEG;salvaEst();desenhaPgs()};
+ cx.querySelector('#eGo').onclick=()=>gerarImgs();
+ cx.querySelectorAll('[data-im]').forEach(b=>b.onclick=()=>verImg(b.dataset.im))};
+
+async function gerarImgs(extra){if(gerando)return;const pr=promptFinal();if(!pr)return toast('Escreva o que desenhar');
+ const f=FORMATOS[EST.formato],pedido=Object.assign({prompt:pr,negativo:EST.negativo,largura:f.w,altura:f.h,passos:EST.passos,cfg:EST.cfg,semente:EST.semente===''?-1:+EST.semente,quantidade:EST.qtd,lora:EST.lora,forca:EST.forca},extra||{});
+ gerando=true;progresso={v:0,t:'Mandando o pedido…'};ultimas=[];redesenhaEst();
+ try{const {id}=await kApi('/gerar',pedido);const ini=Date.now();
+  while(true){await new Promise(r=>setTimeout(r,1500));const t=await kApi('/tarefa/'+encodeURIComponent(id));
+   progresso={v:t.progresso||0,t:t.estado=='fila'?'Na fila…':t.estado=='gerando'?'Gerando '+Math.min((t.feitas||0)+1,t.total||pedido.quantidade)+' de '+(t.total||pedido.quantidade)+'…':''};barra();
+   if(t.estado=='erro')throw new Error(t.erro||'o Kaggle não conseguiu gerar');
+   if(t.estado=='pronto'){for(const im of t.imagens||[]){const blob=await deB64('data:image/png;base64,'+im.png);const r={id:uid(),t:Date.now(),blob,prompt:pr,cena:EST.prompt,negativo:pedido.negativo,semente:im.semente,lora:pedido.lora,forca:pedido.forca,largura:pedido.largura,altura:pedido.altura,post:alvoPost};await IMGS.por(r);historico.push(r);ultimas.push(r)}
+    if(historico.length>80){const sobra=historico.splice(0,historico.length-80);for(const x of sobra)try{await IMGS.tirar(x.id)}catch(e){}}
+    progresso={v:1,t:ultimas.length+(ultimas.length==1?' imagem pronta':' imagens prontas')};break}
+   if(Date.now()-ini>8*60e3)throw new Error('demorou demais; o Kaggle pode ter caído')}}
+ catch(e){progresso={v:0,t:'❌ '+e.message};if(!K.url){K.selo=['mal','Kaggle desligado']}}
+ gerando=false;redesenhaEst()}
+
+function verImg(id){const i=historico.find(x=>x.id==id);if(!i)return;const post=msgs.find(x=>x.id==(alvoPost||i.post))||msgs.filter(m=>m.de=='ela'&&m.tipo=='post'&&m.dados&&m.dados.status!='postado').slice(-1)[0];
+ const sh=folha(`<img class="vista" src="${urlDe(i.blob)}" alt="Imagem gerada">
+  <p class="m" style="margin:0 0 8px">Semente ${esc(i.semente)}${i.lora?' · '+esc(i.lora)+' '+i.forca:''} · ${i.largura}×${i.altura}</p>
+  ${post?`<button class="linha" data-x="post"><span class="e">📸</span><span>Usar no post<small>${esc(post.dados.ideia.slice(0,70))}</small></span></button>`:''}
+  <button class="linha" data-x="baixa"><span class="e">⬇</span>Baixar</button>
+  <button class="linha" data-x="bib"><span class="e">📚</span>Mandar para a Biblioteca</button>
+  <button class="linha" data-x="mesma"><span class="e">🎯</span><span>Gerar de novo com esta semente<small>Mude o texto e mantenha a composição parecida.</small></span></button>
+  <button class="linha" data-x="copia"><span class="e">📋</span>Copiar o prompt</button>
+  <button class="linha" data-x="apaga"><span class="e">🗑</span><span>Apagar</span></button>`);
+ sh.onclick=async e=>{const b=e.target.closest('[data-x]');if(!b)return;const x=b.dataset.x;
+  if(x=='post'){post.img=i.blob;await guarda(post);fecha();desenhaChat(false);toast('Imagem no post')}
+  if(x=='baixa'){baixar(i.blob,'tamaki-'+new Date(i.t).toISOString().slice(0,10)+'-'+i.semente+'.png')}
+  if(x=='bib'){try{await naBiblioteca(i);toast('Guardada na Biblioteca')}catch(er){toast('Não consegui guardar: '+er.message)}}
+  if(x=='mesma'){EST.semente=String(i.semente);EST.qtd=1;salvaEst();fecha();desenhaPgs();toast('Semente '+i.semente+' fixada em Avançado')}
+  if(x=='copia')cp(i.prompt);
+  if(x=='apaga'){if(!b.dataset.s){b.dataset.s=1;b.querySelector('span:last-child').textContent='Toque de novo para apagar';return}await IMGS.tirar(i.id);historico=historico.filter(y=>y.id!=i.id);ultimas=ultimas.filter(y=>y.id!=i.id);fecha();desenhaPgs()}}}
+
+// mesma Biblioteca da Central (IndexedDB "tamaki-biblioteca")
+function naBiblioteca(i){return new Promise((ok,no)=>{const r=indexedDB.open('tamaki-biblioteca',1);r.onupgradeneeded=()=>{if(!r.result.objectStoreNames.contains('itens'))r.result.createObjectStore('itens',{keyPath:'id'})};r.onerror=()=>no(r.error);
+ r.onsuccess=()=>{const db=r.result,id='b'+Date.now().toString(36)+Math.random().toString(36).slice(2,7),t=db.transaction('itens','readwrite');
+  t.objectStore('itens').put({id,origem:'outro',tipo:'imagem',nome:'Tamaki · '+(i.cena||'imagem').slice(0,40),texto:i.prompt,mime:i.blob.type||'image/png',tamanho:i.blob.size,criado:Date.now(),blob:i.blob});
+  t.oncomplete=()=>{db.close();try{const c=new BroadcastChannel('tamaki-biblioteca');c.postMessage({novo:id});c.close()}catch(e){}ok(id)};t.onerror=()=>no(t.error)}})}
+
 /* ---------- cópia de segurança ---------- */
 PG.copia=cx=>{cx.innerHTML=`<div class="c"><b>Tudo da Tamaki</b><p class="m">Ficha, cartão, perfil, conversa, diário, notícias e posts com as imagens. Use para trocar de aparelho ou guardar.</p><div class="ab"><button class="b" id="kBx">⬇ Baixar tudo (.json)</button><label class="g">↺ Restaurar tudo<input type="file" id="kAb" accept=".json,application/json" hidden></label></div><p class="m" id="kR"></p></div>
  <div class="c"><b>Só a ficha</b><p class="m">O mesmo arquivo de antes (tamaki-ficha.json).</p><div class="ab"><button class="g" id="fBx">⬇ Baixar ficha</button><label class="g">↺ Restaurar ficha<input type="file" id="fAb" accept=".json,application/json" hidden></label></div></div>`;
@@ -527,7 +675,10 @@ PG.copia=cx=>{cx.innerHTML=`<div class="c"><b>Tudo da Tamaki</b><p class="m">Fic
 /* ---------- ficha completa (o editor de antes) ---------- */
 const lib=src=>new Promise((ok,no)=>{if(document.querySelector(`script[src="${src}"]`))return ok();const s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=()=>no(new Error('sem internet para ler este tipo de arquivo'));document.head.appendChild(s)});
 const CDN='https://cdnjs.cloudflare.com/ajax/libs/';
+// arquivo que não é texto (zip, áudio, imagem…) não entra nas respostas dela
+const pareceTexto=t=>{if(!t)return false;const a=t.slice(0,4000),ruim=(a.match(/[\uFFFD\u0000-\u0008\u000E-\u001F]/g)||[]).length;return ruim/a.length<.02};
 async function extrair(f){const ext=(f.name.split('.').pop()||'').toLowerCase();
+  if(/^(zip|rar|7z|gz|tar|wav|mp3|ogg|m4a|flac|png|jpe?g|webp|gif|mp4|webm|onnx|pt|pth|bin|safetensors|ckpt|exe|apk)$/.test(ext))return {texto:'',info:'arquivo guardado, mas não é de texto: não entra nas respostas dela'};
   if(ext=='pdf'){await lib(CDN+'pdf.js/3.11.174/pdf.min.js');pdfjsLib.GlobalWorkerOptions.workerSrc=CDN+'pdf.js/3.11.174/pdf.worker.min.js';
     const pdf=await pdfjsLib.getDocument({data:await f.arrayBuffer()}).promise,out=[];for(let i=1;i<=pdf.numPages;i++){const c=await(await pdf.getPage(i)).getTextContent();out.push(c.items.map(x=>x.str+(x.hasEOL?'\n':' ')).join(''))}return {texto:out.join('\n\n').replace(/[ \t]+\n/g,'\n').trim(),info:pdf.numPages+(pdf.numPages==1?' página':' páginas')}}
   if(ext=='docx'){await lib(CDN+'mammoth/1.6.0/mammoth.browser.min.js');return {texto:(await mammoth.extractRawText({arrayBuffer:await f.arrayBuffer()})).value.trim()}}
@@ -535,7 +686,7 @@ async function extrair(f){const ext=(f.name.split('.').pop()||'').toLowerCase();
     const u=new Uint8Array(await f.arrayBuffer()),comum=/[a-záàâãéêíóôõúç ,.]/gi,parece=t=>(t.match(/\p{L}{3,}/gu)||[]).length>=3&&(t.match(comum)||[]).length/t.length>.8;
     const txt=[new TextDecoder('utf-16le').decode(u),new TextDecoder('windows-1252').decode(u)].map(s=>(s.match(/[A-Za-zÀ-ÿ0-9 .,;:!?()"“”'’\-–—\n\r]{12,}/gu)||[]).filter(parece).join('\n')).sort((a,b)=>(b.match(/\p{L}{3,}/gu)||[]).length-(a.match(/\p{L}{3,}/gu)||[]).length)[0];
     return {texto:(txt||'').replace(/\s+\n/g,'\n').trim(),info:'texto aproximado (Word antigo). Se ficar estranho, salve como .docx ou .pdf'}}
-  return {texto:(await f.text()).trim()}}
+  const t=(await f.text()).trim();return pareceTexto(t)?{texto:t}:{texto:'',info:'não parece texto: não entra nas respostas dela'}}
 async function adicionar(fs){for(const f of fs){toast('Lendo '+f.name+'…');const d={id:uid(),nome:f.name,tipo:f.type,tamanho:f.size,blob:f,usar:1,criado:Date.now(),texto:'',info:''};
   try{Object.assign(d,await extrair(f))}catch(e){d.info='não consegui ler o texto ('+e.message+'); o arquivo ficou guardado'}
   try{await DOCS.por(d)}catch(e){toast('Sem espaço para guardar '+f.name);continue}}await listar();toast(fs.length==1?'Documento guardado':fs.length+' documentos guardados');desenhaPgs()}
@@ -570,6 +721,7 @@ window.RES=troca=>{if(troca){try{localStorage.setItem('tamaki:c:antes-da-resumid
  try{await listar()}catch(e){}
  try{msgs=((await ZAP.todas())||[]).sort((a,b)=>a.t-b.t)}catch(e){toast('Não consegui abrir a conversa guardada')}
  try{vozes=((await VOZES.todas())||[]).filter(v=>v&&v.id)}catch(e){}
+ try{historico=((await IMGS.todas())||[]).sort((a,b)=>a.t-b.t)}catch(e){}
  desenhaModos();topo();desenhaChat()})();
 if('serviceWorker'in navigator&&location.protocol.indexOf('http')==0)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script></body></html>
