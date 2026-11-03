@@ -1,54 +1,218 @@
 <!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0d0b1e"><meta name="color-scheme" content="dark"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png"><title>Tamaki Shion · Ficha viva</title>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#0d0b1e"><meta name="color-scheme" content="dark"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png"><title>Tamaki Shion</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0d0b1e;--pn:#171431;--ln:#2c2757;--tx:#ece6f6;--mu:#9a94c2;--ac:#ffae5c;--te:#5fd9cf;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root{--bg:#0d0b1e;--pn:#171431;--pn2:#1f1b40;--ln:#2c2757;--tx:#ece6f6;--mu:#9a94c2;--ac:#ffae5c;--te:#5fd9cf;--eu:#2b2457;--ela:#1a1736;--er:#ff7a8a;
+  color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);height:100%}
 *{box-sizing:inherit}
-body{margin:0;min-height:100vh;background:radial-gradient(ellipse 90% 38% at 50% -6%,rgba(255,174,92,.16),transparent 70%),var(--bg);background-attachment:fixed;color:var(--tx);font:16px/1.5 Nunito,system-ui,sans-serif}
-.w{max-width:760px;margin:0 auto;padding:18px 16px 40px}
-h1{font:15px/1.4 "Press Start 2P",monospace;color:var(--ac);margin:0;text-shadow:0 0 18px rgba(255,174,92,.45)}
-.m{color:var(--mu);font-size:14px;margin:6px 0 0}
-nav{display:flex;gap:6px;overflow-x:auto;padding:14px 0 6px;scrollbar-width:none}
+html{height:100%}
+body{margin:0;height:100%;background:var(--bg);color:var(--tx);font:16px/1.5 Nunito,system-ui,sans-serif;overflow:hidden}
 button,input,textarea,select{font:inherit;color:inherit}
-nav button{white-space:nowrap;background:var(--pn);border:1px solid var(--ln);border-radius:8px;padding:8px 12px;font-weight:700;cursor:pointer}
-nav button.on{background:var(--ac);border-color:var(--ac);color:#1b1230}
+button{cursor:pointer}
+a{color:var(--te);font-weight:700}
+:focus-visible{outline:2px solid var(--te);outline-offset:2px}
+.hide{display:none!important}
+
+/* ---------- conversa ---------- */
+#app{height:100%;display:flex;flex-direction:column;max-width:820px;margin:0 auto;border-left:1px solid var(--ln);border-right:1px solid var(--ln)}
+header.top{display:flex;align-items:center;gap:12px;padding:10px 12px;background:var(--pn);border-bottom:1px solid var(--ln)}
+.quem{display:flex;align-items:center;gap:12px;flex:1;min-width:0;background:none;border:0;padding:0;text-align:left}
+.av{width:46px;height:46px;border-radius:50%;padding:2px;background:conic-gradient(from 200deg,var(--ac),var(--te),var(--ac));flex:none}
+.av img,.av span{width:100%;height:100%;border-radius:50%;object-fit:cover;display:grid;place-items:center;background:var(--pn2);font-size:22px;border:2px solid var(--pn)}
+.quem b{display:block;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.quem small{display:block;color:var(--mu);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.quem small.dig{color:var(--te)}
+.ic{background:none;border:0;width:42px;height:42px;border-radius:50%;font-size:20px;color:var(--mu);flex:none}
+.ic:active{background:var(--pn2)}
+
+#lista{flex:1;overflow-y:auto;padding:14px 12px 8px;background:radial-gradient(circle at 20% 0%,rgba(95,217,207,.07),transparent 40%),radial-gradient(circle at 90% 100%,rgba(255,174,92,.07),transparent 45%),var(--bg)}
+.dia{text-align:center;margin:14px 0 10px}
+.dia span{background:var(--pn);border:1px solid var(--ln);color:var(--mu);font-size:13px;padding:3px 12px;border-radius:20px}
+.msg{max-width:min(86%,520px);margin:4px 0 8px;padding:8px 11px 6px;border-radius:14px;position:relative;word-wrap:break-word}
+.msg.eu{margin-left:auto;background:var(--eu);border-bottom-right-radius:4px}
+.msg.ela{background:var(--ela);border:1px solid var(--ln);border-bottom-left-radius:4px}
+.msg p{margin:0 0 4px;white-space:pre-wrap}
+.cap{display:block;font-size:13px;font-weight:800;color:var(--mu);margin-bottom:3px}
+.ela .cap{color:var(--te)}
+.hora{display:block;text-align:right;font-size:12px;color:var(--mu);margin-top:2px}
+.thumbs{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0}
+.thumbs img{width:110px;height:110px;object-fit:cover;border-radius:10px;border:1px solid var(--ln)}
+.msg.diario{background:#2a2346;border:1px dashed #6b5fa8}
+.coment{border-left:3px solid var(--ac);padding:2px 0 2px 10px;margin:6px 0}
+.conf{background:rgba(255,174,92,.12);border:1px solid rgba(255,174,92,.5);border-radius:8px;padding:6px 9px;font-size:14px;margin:6px 0}
+.erro{border-color:var(--er)!important}
+.erro .cap{color:var(--er)}
+
+/* o post é a peça principal: uma polaroid ainda sem foto */
+.pola{max-width:300px;background:#f4efe6;color:#2a2140;border-radius:6px;padding:10px 10px 12px;margin:8px 0 6px;transform:rotate(-.6deg);box-shadow:0 6px 18px rgba(0,0,0,.35)}
+.pola .foto{aspect-ratio:4/5;border-radius:3px;overflow:hidden;background:repeating-linear-gradient(135deg,#ddd3c2 0 12px,#e8dfd0 12px 24px);display:grid;place-items:center;text-align:center;padding:16px;font-size:15px;color:#5b4d70}
+.pola .foto img{width:100%;height:100%;object-fit:cover}
+.pola .leg{margin:10px 2px 0;white-space:pre-wrap;font-size:15px;line-height:1.45}
+.pola .tags{margin:6px 2px 0;color:#2f7f78;font-size:14px;font-weight:700;word-break:break-word}
+.estado{display:inline-block;font-size:12px;font-weight:800;padding:2px 9px;border-radius:20px;margin-top:4px}
+.estado.rasc{background:rgba(95,217,207,.15);color:var(--te)}
+.estado.feito{background:rgba(255,174,92,.18);color:var(--ac)}
+.acoes{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.bt{background:var(--pn2);border:1px solid var(--ln);border-radius:20px;padding:7px 12px;font-size:14px;font-weight:700}
+.bt.p{background:var(--ac);border-color:var(--ac);color:#1b1230}
+.bt:active{filter:brightness(1.2)}
+.pensando{display:inline-flex;gap:4px;padding:12px 14px}
+.pensando i{width:7px;height:7px;border-radius:50%;background:var(--mu);animation:pul 1.2s infinite}
+.pensando i:nth-child(2){animation-delay:.2s}.pensando i:nth-child(3){animation-delay:.4s}
+@keyframes pul{0%,60%,100%{opacity:.3}30%{opacity:1}}
+.vazio{text-align:center;color:var(--mu);padding:30px 20px}
+.vazio b{color:var(--tx);display:block;font-size:18px;margin-bottom:6px}
+
+/* barra de baixo */
+footer.bar{background:var(--pn);border-top:1px solid var(--ln);padding:8px 10px 10px}
+.modos{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:8px}
+.modo{white-space:nowrap;background:transparent;border:1px solid var(--ln);border-radius:20px;padding:6px 11px;font-weight:700;font-size:14px;color:var(--mu)}
+.modo.on{background:var(--te);border-color:var(--te);color:#0d1f1e}
+.pend{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.pend div{position:relative}
+.pend img{width:64px;height:64px;object-fit:cover;border-radius:8px}
+.pend button{position:absolute;top:-6px;right:-6px;width:24px;height:24px;border-radius:50%;border:0;background:var(--er);color:#fff;font-size:14px;line-height:1}
+.entra{display:flex;align-items:flex-end;gap:8px}
+.entra textarea{flex:1;min-height:46px;max-height:140px;resize:none;background:var(--bg);border:1px solid var(--ln);border-radius:22px;padding:11px 16px;field-sizing:content}
+.env{width:46px;height:46px;border-radius:50%;border:0;background:var(--ac);color:#1b1230;font-size:20px;flex:none}
+.env:disabled{opacity:.5}
+.dica{font-size:13px;color:var(--mu);margin:6px 4px 0}
+
+/* ---------- páginas (perfil e o resto) ---------- */
+.pg{position:fixed;inset:0;background:var(--bg);overflow-y:auto;z-index:10;padding-top:env(safe-area-inset-top,0px);padding-bottom:calc(30px + env(safe-area-inset-bottom,0px))}
+.pg.anima{animation:entra .22s ease-out}
+@keyframes entra{from{transform:translateX(30px);opacity:.4}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.pg.anima{animation:none}.pensando i{animation:none;opacity:.7}}
+.pg .in{max-width:760px;margin:0 auto;padding:0 16px}
+.pg header{display:flex;align-items:center;gap:8px;padding:10px 4px;position:sticky;top:0;background:var(--bg);z-index:2;margin:0 -4px}
+.pg header h2{margin:0;font-size:18px}
+.capa{text-align:center;padding:10px 0 18px}
+.capa .av{width:150px;height:150px;margin:0 auto 12px;padding:4px;position:relative}
+.capa .av span{font-size:60px;border-width:4px;border-color:var(--bg)}
+.capa .troca{position:absolute;right:4px;bottom:4px;width:40px;height:40px;border-radius:50%;background:var(--ac);color:#1b1230;border:3px solid var(--bg);font-size:17px}
+.pg .campo{background:transparent;border:1px solid transparent;border-radius:8px;text-align:center;width:100%;padding:4px 8px}
+.pg .campo:focus{border-color:var(--ln);background:var(--pn)}
+.pg .campo.nome{font-size:24px;font-weight:800}
+.pg .campo.rec{color:var(--mu)}
+.atalhos{display:flex;gap:10px;justify-content:center;margin-top:12px}
+.at{display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--pn);border:1px solid var(--ln);border-radius:12px;padding:10px 14px;min-width:92px;font-size:14px;font-weight:700}
+.at span{font-size:22px}
+.sec{background:var(--pn);border:1px solid var(--ln);border-radius:12px;margin:12px 0;padding:14px}
+.sec h3{margin:0 0 10px;font-size:15px;color:var(--mu);display:flex;justify-content:space-between;align-items:center}
+.sec h3 button{background:none;border:0;color:var(--te);font-weight:800;font-size:14px}
+.rede{display:flex;align-items:center;gap:12px;padding:9px 0;border-top:1px solid var(--ln);text-decoration:none;color:var(--tx);font-weight:400}
+.rede:first-of-type{border-top:0}
+.rede .e{font-size:22px;width:30px;text-align:center}
+.rede small{display:block;color:var(--mu);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:60vw}
+.grade{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.grade button{aspect-ratio:1;border:0;padding:0;background:var(--pn2);border-radius:4px;overflow:hidden;font-size:12px;color:var(--mu)}
+.grade img{width:100%;height:100%;object-fit:cover}
+.linha{display:flex;align-items:center;gap:14px;width:100%;background:none;border:0;border-top:1px solid var(--ln);padding:13px 2px;text-align:left}
+.linha:first-of-type{border-top:0}
+.linha .e{font-size:22px;width:30px;text-align:center}
+.linha small{display:block;color:var(--mu);font-size:13px}
+.mini{display:flex;gap:12px;align-items:flex-start}
+.mini .pola{width:130px;flex:none;padding:6px 6px 8px;margin:0}
+.mini .pola .foto{padding:6px;font-size:11px}
+.lbl{display:block;font-weight:800;font-size:14px;color:var(--mu);margin:12px 0 4px}
+.lbl small{font-weight:400}
+.pg :where(input:not([type=checkbox]):not([type=radio]),textarea,select),.sh :where(textarea,input:not([type=checkbox]):not([type=radio])){background:var(--bg);border:1px solid var(--ln);border-radius:8px;padding:9px;width:100%}
+.pg :where(textarea),.sh :where(textarea){field-sizing:content;min-height:46px;resize:vertical}
+option{background:#171431}
+.ab{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:14px;color:var(--mu);margin-top:10px}
+.ab input[type=checkbox]{width:auto}
+.b,.g{border-radius:8px;padding:9px 14px;font-weight:800;display:inline-block;font-size:15px}
+.b{background:var(--ac);color:#1b1230;border:0}
+.g{background:none;border:1px solid var(--ln)}
+.m{color:var(--mu);font-size:14px;margin:6px 0 0}
+.opc{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--ln);border-radius:10px;padding:12px;margin:8px 0}
+.opc input{width:auto;margin-top:5px}
+.opc.on{border-color:var(--te);background:rgba(95,217,207,.06)}
+
+/* cartão de personalidade: no formato de cartão, como o da voz */
+.cartao{border-radius:16px;padding:16px;background:linear-gradient(135deg,#2b1f52,#17133a 55%,#173a40);border:1px solid #4a3f86;display:grid;grid-template-columns:88px 1fr;gap:14px;align-items:center;margin:6px 0 4px}
+.cartao .av{width:88px;height:88px}
+.cartao .av span{font-size:40px}
+.cartao b{font-size:20px;display:block}
+.cartao p{margin:4px 0 0;font-size:14px;color:#d6cff0}
+.cartao .chip{display:inline-block;margin-top:8px;font-size:13px;font-weight:800;background:rgba(0,0,0,.3);border:1px solid #4a3f86;border-radius:20px;padding:2px 10px}
+
+/* ficha antiga */
+nav.fn{display:flex;gap:6px;overflow-x:auto;padding:4px 0 6px;scrollbar-width:none}
+nav.fn button{white-space:nowrap;background:var(--pn);border:1px solid var(--ln);border-radius:8px;padding:8px 12px;font-weight:700}
+nav.fn button.on{background:var(--ac);border-color:var(--ac);color:#1b1230}
 .c{background:var(--pn);border:1px solid var(--ln);border-radius:10px;padding:14px;margin:12px 0}
 .r{display:grid;grid-template-columns:1fr auto;gap:6px;margin-bottom:12px}
 .r textarea,.r .f{grid-column:1/3}
-input,textarea,select{background:transparent;border:1px solid var(--ln);border-radius:6px;padding:8px;width:100%}option{background:#171431}
-textarea{field-sizing:content;min-height:44px;resize:vertical}
 .lb{font-weight:800;color:var(--mu);font-size:14px}
 .ti{font-weight:800;font-size:18px;margin-bottom:12px}
-.x{background:none;border:1px solid var(--ln);border-radius:6px;width:36px;cursor:pointer;color:var(--mu)}
-.ab{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:14px;color:var(--mu)}
-.ab input[type=checkbox]{width:auto}
-.b,.g{border-radius:8px;padding:9px 14px;font-weight:800;cursor:pointer;display:inline-block}
-.b{background:var(--ac);color:#1b1230;border:0}
-.g{background:none;border:1px solid var(--ln)}
-a{color:var(--te);font-weight:700}
+.x{background:none;border:1px solid var(--ln);border-radius:6px;width:36px;color:var(--mu)}
 .dlg{background:#06050f;border:4px double #fff;border-radius:4px;padding:14px;margin:12px 0}
-.dlg .cap{font:10px "Press Start 2P",monospace;color:#ffb36b}
-.dlg textarea{border:0;color:#fff;font:13px/1.6 ui-monospace,Menlo,monospace;min-height:300px;margin-top:10px;padding:0}
+.dlg textarea{border:0!important;color:#fff;font:13px/1.6 ui-monospace,Menlo,monospace;min-height:300px;margin-top:10px;padding:0!important}
 .doc{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px;align-items:center;border-top:1px solid var(--ln);padding:12px 0}
 .doc:first-of-type{border-top:0}
-.doc .ic{font-size:1.8rem}
+.doc .ic2{font-size:1.8rem}
 .doc b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
 .doc .ab{grid-column:1/3}
 .doc pre{grid-column:1/3;white-space:pre-wrap;max-height:260px;overflow:auto;background:#06050f;border-radius:8px;padding:10px;font:13px/1.5 ui-monospace,monospace;margin:0}
 .aviso{border-color:var(--ac)}
-:focus-visible{outline:2px solid var(--te);outline-offset:2px}
-</style></head><body><div class="w">
-<h1>TAMAKI SHION</h1>
-<p class="m">Ficha viva da personagem · <span id="st">carregando</span></p>
-<div id="av"></div>
-<nav id="nv"></nav><main id="mn"></main></div>
+
+/* folha que sobe de baixo */
+.fundo{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.sh{background:var(--pn);border:1px solid var(--ln);border-bottom:0;border-radius:18px 18px 0 0;width:100%;max-width:640px;max-height:88%;overflow-y:auto;padding:8px 16px calc(18px + env(safe-area-inset-bottom,0px))}
+.sh .puxa{width:44px;height:5px;border-radius:3px;background:var(--ln);margin:4px auto 10px}
+.sh h3{margin:0 0 8px}
+.sh .linha{padding:12px 2px}
+.toast{position:fixed;left:50%;bottom:calc(120px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#06050f;border:1px solid var(--ln);border-radius:10px;padding:10px 16px;z-index:30;max-width:90%;text-align:center;font-size:15px}
+</style></head><body>
+<div id="app">
+  <header class="top">
+    <button class="quem" id="abrePerfil" aria-label="Ver o perfil da Tamaki"><div class="av" id="avTop"></div><div style="min-width:0"><b id="nomeTop">Tamaki Shion</b><small id="recTop"></small></div></button>
+    <button class="ic" id="menuTop" aria-label="Mais opções">⋮</button>
+  </header>
+  <div id="lista" aria-live="polite"></div>
+  <footer class="bar">
+    <div class="modos" id="modos" role="tablist" aria-label="O que a mensagem vai ser"></div>
+    <div class="pend" id="pend"></div>
+    <div class="entra">
+      <button class="ic" id="anexa" aria-label="Anexar print ou imagem">📎</button>
+      <textarea id="txt" rows="1" aria-label="Mensagem"></textarea>
+      <button class="env" id="envia" aria-label="Enviar">➤</button>
+    </div>
+    <p class="dica" id="dica"></p>
+  </footer>
+</div>
+<div id="pgs"></div><div id="shs"></div>
+<input type="file" id="fAnexo" accept="image/*" multiple hidden>
+<input type="file" id="fImg" accept="image/*" hidden>
+<input type="file" id="fFoto" accept="image/*" hidden>
 <script>
-// Ficha resumida (versão 2). O que você editar fica salvo neste aparelho e a Central e a Escrita leem daqui.
+/* =========================================================
+   Tamaki Shion: conversa, perfil, cartão e ficha.
+   A ficha continua em localStorage "tamaki" (a Central e a Escrita leem daqui).
+   A conversa, o diário, as notícias e os posts ficam no IndexedDB "tamaki-zap".
+   ========================================================= */
+
+// Ficha resumida (versão 2) + cartão de personalidade + perfil
+const CARTAO={id:'cartao',t:'Cartão de personalidade',inc:1,f:[
+ ['Essência','Elfa de 25 anos, caótica neutra, fofoqueira e dramática. Vive o dia a dia entre livros, games e a galinha de pelúcia.','ess'],
+ ['Jeito de falar','Papo de call, português brasileiro bem informal, gírias da comunidade LGBTQIAP+ (pajubá). Chama quem acompanha de “miga” e “migo”. Frases curtas, exagera nas reações.','fala'],
+ ['Bordões','“Bicha, nem te conto”, “gente”, “tintim por tintim”, “nem relógio trabalha de graça”, “não vou dar palco pra maluco”.','bord'],
+ ['Nunca faz','Palavrão sem suavizar; inventar fatos sobre gente real; discurso de ódio; fingir que não é uma personagem feita com IA.','nunca'],
+ ['Exemplos de fala','Bicha, nem te conto: dobrei a página 42 DE NOVO e a galinha me olhou com julgamento.\nMiga, eu não vou dar palco pra maluco… mas eu vou comentar, né? Sou humana. Quer dizer, elfa.\nGente, dormi às 4 por causa de UMA batalha de ginásio. Valeu cada olheira.','ex'],
+ ['Aparência (para imagens, em inglês)','Tamaki Shion, a 25-year-old elf woman, warm brown skin, curly blue-violet hair with one orange streak, teal eyes, pointed elf ears, small fangs','apar'],
+ ['Estilo das imagens (em inglês)','warm cartoon illustration, flat colors, clean lineart, cozy soft lighting','estilo'],
+ ['Palavra-gatilho do LoRA','','lora'],
+ ['Marca de IA nos posts','#personagemIA #feitocomIA','marca'],
+ ['Voz ligada','','voz']]};
+const PERFIL={nome:'Tamaki Shion',recado:'lendo, jogando ou fofocando',sobre:'Elfa, 25 anos, leitora de livros que não existem. Personagem criada com IA.',foto:'',vozId:'',
+ redes:[{e:'📸',n:'Instagram',u:''},{e:'▶️',n:'YouTube',u:''},{e:'🎵',n:'TikTok',u:''}]};
 const D={v:2,mods:[
 {id:'perfil',t:'Perfil',inc:1,f:[['Quem é','Tamaki Shion, elfa de 25 anos.'],['Aparência','Pele morena, cabelo cacheado azul-arroxeado com mecha laranja, olhos verde-água, orelhas de elfa e presinhas.'],['Roupa','Moletom preto e calça cargo bege. Visual de protagonista: a definir (transformação no Ep. 1).'],['Companheiros','Galinha de pelúcia (conversa com ela) e gato preto de pelúcia.'],['Manias','Dobra as páginas dos livros, enrola a mecha quando se distrai, dorme mal por causa dos jogos.'],['Gostos','Ler, videogames, Pokémon FireRed.'],['Aviso','Personagem criada com IA, explícito no perfil.']]},
 {id:'pers',t:'Personalidade',inc:1,f:[['Jeito de falar','Primeira pessoa, papo de call com o público, português brasileiro informal.'],['Temperamento','Fofoqueira, dramática, sarcástica e competitiva (“não vou dar palco pra maluco”).'],['Afetos e rival','Ama a mãe e o Bobasauro. Rival: Gary, o “moleque mimado de apartamento”.'],['Bordões','“gente”, “amiga”, “tintim por tintim”, “nem relógio trabalha de graça”. Despedida: “Nos vemos no próximo sábado! Beijão!”'],['Regras','Palavrões sempre suavizados (YouTube). Frase de assinatura: a definir.']]},
+JSON.parse(JSON.stringify(CARTAO)),
 {id:'voz',t:'Voz',inc:1,f:[['Motor','Kokoro no Termux (voz treinada própria em preparo). Reservas: ElevenLabs, Azure e Voxphera.'],['Voz (id)','pf_dora','voz'],['Velocidade','1.05','vel'],['Pausa entre frases (s)','0.4','pa'],['Timbre','Tom +1 a +2 semitons e leve equalização.'],['Mix no CapCut (0–1000)','Voz 100–170 · música com fala ~13 · música nas pausas ~25 · efeitos 70–100.']]},
 {id:'visual',t:'Visual',inc:1,f:[['Short (9:16)','Topo: Tamaki PNGtuber · meio: caixa de diálogo com a legenda · baixo: gameplay do FireRed. Longplay em 16:9.'],['Expressões','Neutra, feliz, brava, surpresa, triste e deboche, cada uma com boca aberta e fechada.'],['Legenda','Fonte pixelada, até 2 linhas, letra por letra, sem emotes.'],['Objection','3 camadas: fundo com linhas de impacto, personagem apontando, plaquinha com nome.'],['Arte','PNG transparente, paleta e traço consistentes. Arquivo: ep01_V04_carvalho_objection.png.'],['Cenário da call','Quarto aconchegante: estantes, plantas, luminária de raposa, cadeira gamer roxa, polaroids.']]},
 {id:'uni',t:'Universo',inc:1,f:[['Mundo','Kurogane (Oriente + Ocidente), mesmo universo de Corvos de Ferro, sem ligação direta. Os livros dela são fictícios (exercícios de escrita do Tama).'],['Apartamento','Pequeno: sala com cozinha, quarto, banheiro e varanda. Cartoon quente, cores chapadas.'],['Elenco','Mãe; Bobasauro (o Bulbasaur dela); Prof. Carvalho (rosto de tronco, bigode de folhas); Gary (cabelo espetado, deboche, roupa roxa/azul); Daisy (irmã simpática do Gary); vendedor de Viridian.'],['Série','Ep. 1 “Como eu me tornei a melhor treinadora”: em call com o público, aos sábados. Roteiro em 4 partes (V01–V06, V07–V10, V11–V13, V14–V16).']]}],
@@ -56,13 +220,18 @@ links:[
 {n:'Kokoro-82M',u:'https://huggingface.co/hexgrad/Kokoro-82M',d:'Voz atual (Apache 2.0). Vozes pt-BR: pf_dora, pm_alex, pm_santa.'},
 {n:'Vozes Piper',u:'https://huggingface.co/rhasspy/piper-voices',d:'Base para a voz treinada.'},
 {n:'ElevenLabs',u:'https://elevenlabs.io/terms',d:'Plano pago; os termos proíbem usar o áudio para treinar outros modelos.'},
-{n:'CapCut',u:'https://www.capcut.com',d:'Edição dos vídeos; volume na escala 0–1000.'}]};
-const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-let S=JSON.parse(JSON.stringify(D)),tab='0',tm,docs=[];
-const st=t=>$('#st').textContent=t;
-function save(){clearTimeout(tm);st('salvando…');tm=setTimeout(()=>{try{localStorage.setItem('tamaki',JSON.stringify(S));st('salvo neste aparelho')}catch(e){st('sem espaço para salvar')}},500)}
-function cp(t){navigator.clipboard.writeText(t).then(()=>st('copiado'),()=>{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove();st('copiado')})}
+{n:'CapCut',u:'https://www.capcut.com',d:'Edição dos vídeos; volume na escala 0–1000.'}],
+perfil:JSON.parse(JSON.stringify(PERFIL))};
+
+const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])),clone=o=>JSON.parse(JSON.stringify(o));
+let S=clone(D),tm,docs=[],msgs=[],vozes=[];
+let tt;function toast(t){let e=$('.toast');if(!e){e=document.createElement('div');e.className='toast';document.body.appendChild(e)}e.textContent=t;e.classList.remove('hide');clearTimeout(tt);tt=setTimeout(()=>e.classList.add('hide'),2600)}
+const st=t=>{if(/salvando|salvo neste/.test(t))return;toast(t)};
+function save(){clearTimeout(tm);tm=setTimeout(()=>{try{localStorage.setItem('tamaki',JSON.stringify(S))}catch(e){toast('Sem espaço para salvar a ficha neste aparelho')}},400)}
+function cp(t){const ok=()=>toast('Copiado');if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(ok,velho);else velho();function velho(){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove();ok()}}
 function baixar(blob,nome){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=nome;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+
 // a Central chama gv() e prompt() para montar a Reunião
 function gv(k,d){for(const m of S.mods)for(const x of m.f)if(x[2]==k){const v=String(x[1]).trim().split(/\s+/)[0];if(v)return v}return d}
 function prompt(){let o='Você é a assistente criativa do projeto da personagem Tamaki Shion. Use esta ficha como fonte única sobre ela e o universo dela. Não invente fatos que contradigam a ficha; quando eu pedir uma mudança, devolva só os campos alterados.\n';
@@ -70,11 +239,292 @@ S.mods.filter(m=>m.inc).forEach(m=>{o+='\n## '+m.t+'\n'+m.f.map(x=>'- '+x[0]+': 
 const R=docs.filter(d=>d.usar&&d.texto);if(R.length)o+='\n## Documentos de referência\n'+R.map(d=>'### '+d.nome+'\n'+d.texto).join('\n\n')+'\n';
 return o+'\n## Links e ferramentas\n'+S.links.map(l=>'- '+l.n+(l.u?' ('+l.u+')':'')+(l.d?': '+l.d:'')).join('\n')}
 
-/* ---------- documentos (.pdf, .docx, .doc, .txt): ficam no aparelho; o texto vira referência ---------- */
-const db=()=>new Promise((ok,no)=>{const r=indexedDB.open('tamaki-docs',1);r.onupgradeneeded=()=>r.result.createObjectStore('docs',{keyPath:'id'});r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)});
-async function op(modo,f){const d=await db();return new Promise((ok,no)=>{const t=d.transaction('docs',modo),q=f(t.objectStore('docs'));t.oncomplete=()=>{ok(q&&q.result);d.close()};t.onerror=()=>no(t.error)})}
-const listar=async()=>{docs=(await op('readonly',s=>s.getAll())||[]).sort((a,b)=>b.criado-a.criado)};
-const guardar=d=>op('readwrite',s=>s.put(d)),tirar=id=>op('readwrite',s=>s.delete(id));
+// garante que fichas antigas ganhem o cartão e o perfil sem perder nada
+function garante(){if(!S.perfil)S.perfil=clone(PERFIL);for(const k in PERFIL)if(S.perfil[k]===undefined)S.perfil[k]=clone(PERFIL[k]);
+ let c=S.mods.find(m=>m.id=='cartao');if(!c){c=clone(CARTAO);const i=S.mods.findIndex(m=>m.id=='pers');S.mods.splice(i<0?S.mods.length:i+1,0,c)}
+ CARTAO.f.forEach(x=>{if(!c.f.some(y=>y[2]==x[2]))c.f.push(clone(x))})}
+const cartao=()=>S.mods.find(m=>m.id=='cartao');
+const cv=k=>{const x=(cartao()||CARTAO).f.find(y=>y[2]==k);return x?String(x[1]||'').trim():''};
+const cset=(k,v)=>{const x=cartao().f.find(y=>y[2]==k);if(x){x[1]=v;save()}};
+
+/* ---------- bancos no aparelho ---------- */
+function banco(nome,loja){return{abrir(){return new Promise((ok,no)=>{const r=indexedDB.open(nome,1);r.onupgradeneeded=()=>{if(!r.result.objectStoreNames.contains(loja))r.result.createObjectStore(loja,{keyPath:'id'})};r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)})},
+ async op(modo,fn){const db=await this.abrir();try{return await new Promise((ok,no)=>{const t=db.transaction(loja,modo);let r;const q=fn(t.objectStore(loja));if(q)q.onsuccess=()=>{r=q.result};t.oncomplete=()=>ok(r);t.onerror=()=>no(t.error)})}finally{db.close()}},
+ todas(){return this.op('readonly',s=>s.getAll())},por(x){return this.op('readwrite',s=>s.put(x))},tirar(id){return this.op('readwrite',s=>s.delete(id))}}}
+const ZAP=banco('tamaki-zap','msgs'),VOZES=banco('tamaki-vozes','cartoes'),DOCS=banco('tamaki-docs','docs');
+const listar=async()=>{docs=((await DOCS.todas())||[]).sort((a,b)=>b.criado-a.criado)};
+const guarda=async m=>{await ZAP.por(m);const i=msgs.findIndex(x=>x.id==m.id);if(i<0)msgs.push(m);else msgs[i]=m};
+
+/* ---------- imagens ---------- */
+const URLS=new Map();function urlDe(b){if(!b)return '';if(!URLS.has(b))URLS.set(b,URL.createObjectURL(b));return URLS.get(b)}
+async function reduz(f,max,q=.86){const u=URL.createObjectURL(f);try{const img=await new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=no;i.src=u});
+ const k=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight)),c=document.createElement('canvas');c.width=Math.round(img.naturalWidth*k);c.height=Math.round(img.naturalHeight*k);c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+ return await new Promise(ok=>c.toBlob(ok,'image/jpeg',q))}finally{URL.revokeObjectURL(u)}}
+const b64=b=>new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=no;r.readAsDataURL(b)});
+const deB64=async d=>(await fetch(d)).blob();
+
+/* =========================================================
+   Cérebro: quem pensa pela Tamaki
+   manual  = você copia o pedido e cola em qualquer IA grátis
+   gemini  = chave grátis do Google AI Studio
+   proprio = o seu modelo (Kaggle ou Termux) com endereço no formato OpenAI
+   ========================================================= */
+let CER=Object.assign({modo:'manual',chave:'',modelo:'gemini-2.5-flash',url:'',mProprio:''},(()=>{try{return JSON.parse(localStorage.getItem('tamaki-cerebro'))||{}}catch(e){return{}}})());
+const salvaCer=()=>{try{localStorage.setItem('tamaki-cerebro',JSON.stringify(CER))}catch(e){}};
+const nomeCer=()=>({manual:'Copiar e colar',gemini:'Gemini grátis',proprio:'Modelo próprio'}[CER.modo]);
+
+function pegaJSON(t){t=String(t||'').replace(/```(json)?/gi,'');const a=t.indexOf('{'),b=t.lastIndexOf('}');if(a<0||b<a)throw new Error('a resposta não veio no formato combinado');return JSON.parse(t.slice(a,b+1))}
+
+// conversa = [{role:'user'|'assistant',text,imgs:[Blob]}]
+async function pensar(sis,conversa,json){
+ const junta=[];conversa.forEach(m=>{const u=junta[junta.length-1];if(u&&u.role==m.role){u.text+='\n\n'+m.text;u.imgs=(u.imgs||[]).concat(m.imgs||[])}else junta.push({role:m.role,text:m.text,imgs:(m.imgs||[]).slice()})});
+ if(CER.modo=='manual')return manual(sis,junta);
+ if(CER.modo=='gemini'){if(!CER.chave)throw new Error('falta a chave do Gemini (Perfil › Cérebro)');
+  const contents=[];for(const m of junta){const parts=[{text:m.text||'.'}];for(const im of m.imgs||[]){const d=await b64(im);parts.push({inline_data:{mime_type:im.type||'image/jpeg',data:d.split(',')[1]}})}contents.push({role:m.role=='user'?'user':'model',parts})}
+  const body={systemInstruction:{parts:[{text:sis}]},contents,generationConfig:{temperature:1}};if(json)body.generationConfig.responseMimeType='application/json';
+  const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(CER.modelo||'gemini-2.5-flash')+':generateContent',{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':CER.chave},body:JSON.stringify(body)});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok){const m=(j.error&&j.error.message)||('erro '+r.status);if(r.status==429)throw new Error('o limite grátis do Gemini acabou por agora; espere um pouco ou amanhã');if(r.status==404)throw new Error('o modelo “'+CER.modelo+'” não existe mais; troque em Perfil › Cérebro');if(r.status==400||r.status==403)throw new Error('o Gemini recusou: '+m);throw new Error(m)}
+  const t=((j.candidates||[])[0]?.content?.parts||[]).map(p=>p.text||'').join('').trim();if(!t)throw new Error('o Gemini respondeu vazio (às vezes ele bloqueia algum assunto)');return t}
+ if(CER.modo=='proprio'){if(!CER.url)throw new Error('falta o endereço do seu modelo (Perfil › Cérebro)');
+  const messages=[{role:'system',content:sis}];for(const m of junta){if(m.imgs&&m.imgs.length){const c=[{type:'text',text:m.text||'.'}];for(const im of m.imgs)c.push({type:'image_url',image_url:{url:await b64(im)}});messages.push({role:m.role,content:c})}else messages.push({role:m.role,content:m.text})}
+  let u=CER.url.trim().replace(/\/+$/,'');if(!/\/chat\/completions$/.test(u))u+=(/\/v1$/.test(u)?'':'/v1')+'/chat/completions';
+  const r=await fetch(u,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:CER.mProprio||'tamaki',messages,temperature:.9})}).catch(()=>{throw new Error('não achei o seu modelo nesse endereço; o notebook do Kaggle ou o Termux está ligado?')});
+  const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error((j.error&&(j.error.message||j.error))||('erro '+r.status));
+  const t=(((j.choices||[])[0]||{}).message||{}).content;if(!t)throw new Error('o seu modelo respondeu vazio');return String(t).trim()}
+}
+
+// modo manual: monta o pedido inteiro, você leva para outra IA e traz a resposta
+function manual(sis,junta){return new Promise((ok,no)=>{
+ const imgs=junta.reduce((n,m)=>n+(m.imgs||[]).length,0);
+ const txt='Siga as instruções abaixo e responda só o que for pedido no fim.\n\n=== QUEM VOCÊ É ===\n'+sis+'\n\n=== CONVERSA ===\n'+junta.map((m,i)=>(m.role=='user'?'Tama: ':'Tamaki: ')+m.text).join('\n\n');
+ const sh=folha(`<h3>Levar para outra IA</h3>
+  <p class="m">1. Copie o pedido. 2. Cole numa conversa nova com uma IA grátis (Gemini, ChatGPT, Claude…).${imgs?` <b style="color:var(--ac)">Anexe lá também ${imgs==1?'o print':'os '+imgs+' prints'}.</b>`:''} 3. Copie a resposta dela e cole aqui embaixo.</p>
+  <div class="ab"><button class="b" id="mCop">📋 Copiar pedido</button></div>
+  <label class="lbl" for="mRes">Resposta da IA</label><textarea id="mRes" placeholder="Cole aqui"></textarea>
+  <div class="ab"><button class="b" id="mUsa">Usar resposta</button><button class="g" id="mCan">Cancelar</button></div>`,()=>no(new Error('cancelado')));
+ sh.querySelector('#mCop').onclick=()=>cp(txt);
+ sh.querySelector('#mCan').onclick=()=>{fecha();no(new Error('cancelado'))};
+ sh.querySelector('#mUsa').onclick=()=>{const v=sh.querySelector('#mRes').value.trim();if(!v)return toast('Cole a resposta primeiro');fecha(true);ok(v)};
+})}
+
+/* ---------- o que ela sabe antes de responder ---------- */
+const DIAS=['domingo','segunda','terça','quarta','quinta','sexta','sábado'];
+function quemE(){const p=S.perfil;let o='Você É '+p.nome+'. Fale sempre em primeira pessoa, como ela, em português brasileiro. Você é uma personagem criada com IA e não esconde isso se perguntarem.\n\n## Cartão de personalidade\n';
+ cartao().f.filter(x=>x[1]&&!['apar','estilo','lora','marca','voz'].includes(x[2])).forEach(x=>o+='- '+x[0]+': '+x[1]+'\n');
+ if(p.sobre)o+='- Bio do perfil: '+p.sobre+'\n';
+ S.mods.filter(m=>m.inc&&!['cartao','voz','visual'].includes(m.id)).forEach(m=>{o+='\n## '+m.t+'\n'+m.f.filter(x=>x[1]).map(x=>'- '+x[0]+': '+x[1]).join('\n')+'\n'});
+ let resta=5000;const R=docs.filter(d=>d.usar&&d.texto);if(R.length){o+='\n## Trechos de referência sobre você\n';for(const d of R){if(resta<200)break;const t=d.texto.slice(0,resta);resta-=t.length;o+='### '+d.nome+'\n'+t+'\n'}}
+ return o}
+function contexto(){const n=new Date(),h=n.getHours();let o='\n## Agora\nHoje é '+DIAS[n.getDay()]+', '+n.toLocaleDateString('pt-BR')+', '+n.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})+' ('+(h<6?'madrugada':h<12?'manhã':h<18?'tarde':'noite')+').\n';
+ const di=msgs.filter(m=>m.tipo=='diario').slice(-12);if(di.length)o+='\n## Seu diário (o que aconteceu com você, do mais antigo ao mais novo)\n'+di.map(m=>'- '+new Date(m.t).toLocaleDateString('pt-BR')+': '+m.texto).join('\n')+'\n';
+ const no=msgs.filter(m=>m.tipo=='noticia'&&m.de=='ela'&&m.dados).slice(-5);if(no.length)o+='\n## Notícias que você leu\n'+no.map(m=>'- '+m.dados.titulo+': '+m.dados.resumo).join('\n')+'\n';
+ const po=msgs.filter(m=>m.tipo=='post'&&m.de=='ela'&&m.dados).slice(-6);if(po.length)o+='\n## Seus posts recentes (não repita)\n'+po.map(m=>'- '+m.dados.ideia+' | '+m.dados.legenda.split('\n')[0]).join('\n')+'\n';
+ return o}
+
+/* =========================================================
+   Conversa
+   ========================================================= */
+const MODOS={conversa:{n:'💬 Conversa',ph:'Mensagem para a Tamaki',d:'Ela responde do jeito dela.'},
+ diario:{n:'📓 Diário',ph:'O que aconteceu com ela hoje?',d:'Fica guardado no diário dela. Ela usa isso nos posts e nas conversas.'},
+ noticia:{n:'📰 Notícia',ph:'Recado sobre a notícia (opcional)',d:'Anexe o print com 📎. Ela lê, resume e comenta.'},
+ post:{n:'📸 Post',ph:'Uma dica para ela (opcional)',d:'Ela decide o que está fazendo e escreve a legenda. Você só gera a imagem.'}};
+let modo='conversa',pend=[],ocupada=false,mostrar=120;
+function desenhaModos(){$('#modos').innerHTML=Object.entries(MODOS).map(([k,v])=>`<button class="modo ${k==modo?'on':''}" role="tab" aria-selected="${k==modo}" data-m="${k}">${v.n}</button>`).join('');
+ $('#txt').placeholder=MODOS[modo].ph;$('#dica').textContent=MODOS[modo].d+(modo!='diario'?' Cérebro: '+nomeCer()+'.':'')}
+$('#modos').onclick=e=>{const b=e.target.closest('[data-m]');if(b){modo=b.dataset.m;desenhaModos();$('#txt').focus()}};
+function desenhaPend(){$('#pend').innerHTML=pend.map((b,i)=>`<div><img src="${urlDe(b)}" alt="Imagem anexada ${i+1}"><button data-i="${i}" aria-label="Tirar imagem">×</button></div>`).join('')}
+$('#pend').onclick=e=>{const b=e.target.closest('[data-i]');if(b){pend.splice(+b.dataset.i,1);desenhaPend()}};
+$('#anexa').onclick=()=>$('#fAnexo').click();
+$('#fAnexo').onchange=async e=>{for(const f of [...e.target.files].slice(0,4-pend.length)){try{pend.push(await reduz(f,1600))}catch(x){toast('Não consegui abrir '+f.name)}}e.target.value='';if(modo=='conversa'&&pend.length&&!$('#txt').value)modo='noticia',desenhaModos();desenhaPend()};
+
+const hora=t=>new Date(t).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+const br=s=>esc(s).replace(/\n/g,'<br>');
+function textoPost(d){return (d.legenda||'')+'\n\n'+[...(d.hashtags||[]),cv('marca')].join(' ').replace(/\s+/g,' ').trim()}
+function promptImg(d){return [cv('lora'),cv('apar'),d.prompt_imagem,cv('estilo')].map(x=>String(x||'').trim().replace(/[.,\s]+$/,'')).filter(Boolean).join(', ')}
+function polaroid(m,mini){const d=m.dados;return `<div class="pola"><div class="foto">${m.img?`<img src="${urlDe(m.img)}" alt="Foto do post">`:esc(d.cena||d.ideia)}</div>${mini?'':`<p class="leg">${br(d.legenda)}</p><p class="tags">${esc([...(d.hashtags||[]),cv('marca')].join(' '))}</p>`}</div>`}
+function bolha(m){const de=m.de;let h='';
+ if(m.tipo=='erro')return `<div class="msg ela erro" data-id="${m.id}"><span class="cap">Não consegui responder</span><p>${esc(m.texto)}</p><div class="acoes"><button class="bt p" data-a="refaz" data-id="${m.id}">↻ Tentar de novo</button></div></div>`;
+ const th=(m.imgs||[]).length?`<div class="thumbs">${m.imgs.map((b,i)=>`<img src="${urlDe(b)}" alt="Imagem ${i+1}">`).join('')}</div>`:'';
+ if(de=='ela'&&m.tipo=='noticia'&&m.dados){const d=m.dados;h=`<span class="cap">📰 ${esc(d.titulo||'Notícia')}</span><p>${br(d.resumo)}</p><div class="coment"><p>${br(d.comentario)}</p></div>${d.conferir?`<div class="conf">⚠️ ${br(d.conferir)}</div>`:''}`}
+ else if(de=='ela'&&m.tipo=='post'&&m.dados){const d=m.dados;h=`<p>${br(d.ideia)}</p>${polaroid(m)}<span class="estado ${d.status=='postado'?'feito':'rasc'}">${d.status=='postado'?'✅ Postado em '+new Date(d.postadoEm).toLocaleDateString('pt-BR'):'Rascunho'}</span>
+   <div class="acoes"><button class="bt" data-a="cpimg" data-id="${m.id}">🎨 Copiar prompt da imagem</button><button class="bt" data-a="cppost" data-id="${m.id}">📋 Copiar legenda</button><button class="bt" data-a="foto" data-id="${m.id}">🖼 ${m.img?'Trocar':'Pôr'} imagem</button>${d.status!='postado'?`<button class="bt p" data-a="postei" data-id="${m.id}">✅ Postei</button>`:''}</div>`}
+ else{h=({diario:'<span class="cap">📓 Diário dela</span>',noticia:de=='eu'?'<span class="cap">📰 Notícia para ela ler</span>':'',post:de=='eu'?'<span class="cap">📸 Pedido de post</span>':''}[m.tipo]||'')+th+(m.texto?`<p>${br(m.texto)}</p>`:(m.tipo=='post'?'<p>Ela escolhe.</p>':''))}
+ return `<div class="msg ${de} ${m.tipo}" data-id="${m.id}">${h}<span class="hora">${hora(m.t)}${m.estrela?' ⭐':''}</span></div>`}
+function desenhaChat(rola=true){const l=$('#lista');
+ if(!msgs.length){l.innerHTML=`<div class="vazio"><b>Comece pelo diário</b>Escolha 📓 Diário e conte algo que aconteceu com ela. Depois peça um 📸 Post e veja o que ela decide.</div>`;return}
+ const vis=msgs.slice(-mostrar);let o=msgs.length>mostrar?`<div class="dia"><button class="bt" id="maisAnt">Mostrar anteriores</button></div>`:'',ult='';
+ for(const m of vis){const d=new Date(m.t).toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});if(d!=ult){o+=`<div class="dia"><span>${d}</span></div>`;ult=d}o+=bolha(m)}
+ if(ocupada)o+=`<div class="msg ela"><span class="pensando" aria-label="Ela está escrevendo"><i></i><i></i><i></i></span></div>`;
+ l.innerHTML=o;const ma=$('#maisAnt');if(ma)ma.onclick=()=>{mostrar+=120;desenhaChat(false)};if(rola)l.scrollTop=l.scrollHeight}
+function topo(){const p=S.perfil;$('#nomeTop').textContent=p.nome;const r=$('#recTop');r.textContent=ocupada?'digitando…':p.recado;r.classList.toggle('dig',ocupada);
+ const av=p.foto?`<img src="${p.foto}" alt="">`:'<span>🧝🏽‍♀️</span>';$('#avTop').innerHTML=av;$('#envia').disabled=ocupada}
+
+// envio
+$('#envia').onclick=enviar;
+$('#txt').onkeydown=e=>{if(e.key=='Enter'&&!e.shiftKey&&matchMedia('(pointer:fine)').matches){e.preventDefault();enviar()}};
+async function enviar(){if(ocupada)return;const texto=$('#txt').value.trim(),imgs=pend.slice();
+ if(modo=='diario'||modo=='conversa'){if(!texto&&!imgs.length)return toast(modo=='diario'?'Escreva o que aconteceu':'Escreva uma mensagem')}
+ if(modo=='noticia'&&!imgs.length&&!texto)return toast('Anexe o print da notícia com 📎');
+ const m={id:uid(),t:Date.now(),de:'eu',tipo:modo,texto,imgs};
+ $('#txt').value='';pend=[];desenhaPend();await guarda(m);
+ const qual=modo;if(modo!='conversa'){modo='conversa';desenhaModos()}
+ if(qual=='diario'){desenhaChat();return toast('Guardado no diário dela')}
+ responder(m)}
+
+async function responder(pedido,refazId){ocupada=true;topo();desenhaChat();
+ try{let r;const sis=quemE()+contexto();
+  if(pedido.tipo=='conversa'){const hist=msgs.filter(x=>x.tipo=='conversa'&&x.id!=pedido.id&&x.t<=pedido.t).slice(-14).map(x=>({role:x.de=='eu'?'user':'assistant',text:x.texto||'(imagem)',imgs:[]}));
+   const t=await pensar(sis+'\n## Como responder\nIsto é uma conversa de mensagens com o Tama, quem cria você. Responda curto (1 a 4 frases), sem narrar ações entre asteriscos.',[...hist,{role:'user',text:pedido.texto||'(mandei uma imagem)',imgs:pedido.imgs}]);
+   r={tipo:'conversa',texto:t}}
+  else if(pedido.tipo=='noticia'){const t=await pensar(sis,[{role:'user',text:'Te mandei '+(pedido.imgs.length?(pedido.imgs.length==1?'o print':'os prints')+' de uma notícia':'uma notícia')+'.'+(pedido.texto?' Recado: '+pedido.texto:'')+'\nLeia e responda SÓ com um JSON, sem nada antes ou depois:\n{"titulo":"título curto","resumo":"2 a 4 frases só com os fatos, sem opinião","comentario":"o que você acha, do seu jeito, 1 a 3 frases","conferir":"deixe vazio se parecer confiável; se parecer boato, notícia antiga ou sem fonte, diga o que conferir"}\nSe não der para ler, diga isso no resumo.',imgs:pedido.imgs}],true);
+   const d=pegaJSON(t);r={tipo:'noticia',dados:{titulo:String(d.titulo||''),resumo:String(d.resumo||''),comentario:String(d.comentario||''),conferir:String(d.conferir||'')}}}
+  else if(pedido.tipo=='post'){const t=await pensar(sis,[{role:'user',text:'Hora de decidir o seu próximo post no Instagram. Quem escolhe é você: o que está fazendo, onde e com que roupa, combinando com o seu dia a dia, o seu diário, as notícias que leu e o dia de hoje. Não repita os posts recentes.'+(pedido.texto?'\nDica do Tama: '+pedido.texto:'')+'\nResponda SÓ com um JSON, sem nada antes ou depois:\n{"ideia":"o que você decidiu postar, 1 frase na sua voz","cena":"a foto descrita em português, 1 ou 2 frases","prompt_imagem":"in English: only the scene — action, place, outfit of the day, props, pose, camera framing, lighting. Do NOT describe her face, hair, skin or ears (the app adds that)","legenda":"a legenda na sua voz, 1 a 5 linhas, pode ter emoji","hashtags":["de 5 a 10 hashtags, sem as de IA"]}',imgs:[]}],true);
+   const d=pegaJSON(t);r={tipo:'post',dados:{ideia:String(d.ideia||''),cena:String(d.cena||''),prompt_imagem:String(d.prompt_imagem||''),legenda:String(d.legenda||''),hashtags:(Array.isArray(d.hashtags)?d.hashtags:String(d.hashtags||'').split(/\s+/)).map(x=>String(x).trim()).filter(Boolean).map(x=>x[0]=='#'?x:'#'+x),status:'rascunho'}}}
+  if(refazId){try{await ZAP.tirar(refazId)}catch(e){}msgs=msgs.filter(x=>x.id!=refazId)}
+  await guarda(Object.assign({id:uid(),t:Date.now(),de:'ela',pedido:pedido.id,estrela:0},r))}
+ catch(e){if(e.message!='cancelado'){const er={id:refazId||uid(),t:Date.now(),de:'ela',tipo:'erro',texto:e.message,pedido:pedido.id};msgs=msgs.filter(x=>x.id!=er.id);msgs.push(er)}else if(refazId){}}
+ finally{ocupada=false;topo();desenhaChat();desenhaPerfilSeAberto()}}
+
+// toques nas bolhas
+let alvoFoto=null;
+$('#lista').onclick=async e=>{const b=e.target.closest('[data-a]');
+ if(b){e.stopPropagation();const m=msgs.find(x=>x.id==b.dataset.id);if(!m)return;const a=b.dataset.a;
+  if(a=='cpimg')cp(promptImg(m.dados));if(a=='cppost')cp(textoPost(m.dados));if(a=='foto'){alvoFoto=m.id;$('#fImg').click()}if(a=='postei')marcaPostado(m);
+  if(a=='refaz'){const p=msgs.find(x=>x.id==m.pedido);if(p)responder(p,m.id)}return}
+ const el=e.target.closest('.msg[data-id]');if(el)acoesMsg(el.dataset.id)};
+$('#fImg').onchange=async e=>{const f=e.target.files[0];e.target.value='';const m=msgs.find(x=>x.id==alvoFoto);if(!f||!m)return;try{m.img=await reduz(f,1440,.9);await guarda(m);desenhaChat(false);desenhaPerfilSeAberto();toast('Imagem no post')}catch(x){toast('Não consegui abrir a imagem')}};
+async function marcaPostado(m){m.dados.status='postado';m.dados.postadoEm=Date.now();await guarda(m);desenhaChat(false);desenhaPerfilSeAberto();
+ const ig=S.perfil.redes.find(r=>/insta/i.test(r.n)&&/^https?:/.test(r.u));toast(ig?'Marcado como postado':'Marcado como postado. Ponha o link do Instagram no perfil para abrir de lá')}
+
+function acoesMsg(id){const m=msgs.find(x=>x.id==id);if(!m||m.tipo=='erro')return;const ela=m.de=='ela',ed=m.tipo=='conversa'||m.tipo=='diario'||(ela&&(m.tipo=='noticia'||m.tipo=='post'));
+ const sh=folha(`${ela?`<button class="linha" data-x="estrela"><span class="e">⭐</span><span>${m.estrela?'Tirar do material de treino':'É a cara dela'}<small>${m.estrela?'Deixa de entrar no treino.':'Entra no material para treinar a IA dela no Kaggle.'}</small></span></button>`:''}
+  ${ed?`<button class="linha" data-x="edita"><span class="e">✏️</span><span>Editar${ela?'<small>Corrija antes de marcar ⭐: o treino aprende com o que estiver aqui.</small>':''}</span></button>`:''}
+  ${ela&&m.tipo=='post'?`<button class="linha" data-x="outra"><span class="e">🔁</span><span>Pedir outra ideia</span></button>`:''}
+  ${ela&&m.tipo=='post'&&m.dados.status=='postado'?`<button class="linha" data-x="desposta"><span class="e">↩️</span><span>Voltar para rascunho</span></button>`:''}
+  <button class="linha" data-x="copia"><span class="e">📋</span><span>Copiar texto</span></button>
+  <button class="linha" data-x="apaga"><span class="e">🗑</span><span>Apagar</span></button>`);
+ sh.onclick=async e=>{const b=e.target.closest('[data-x]');if(!b)return;const x=b.dataset.x;
+  if(x=='estrela'){m.estrela=m.estrela?0:1;await guarda(m);fecha();desenhaChat(false);toast(m.estrela?'Guardado para o treino':'Tirado do treino')}
+  if(x=='copia'){cp(m.tipo=='post'&&ela?textoPost(m.dados):m.tipo=='noticia'&&ela?m.dados.titulo+'\n'+m.dados.resumo+'\n\n'+m.dados.comentario:m.texto||'');fecha()}
+  if(x=='outra'){fecha();const p=msgs.find(y=>y.id==m.pedido)||{id:uid(),t:Date.now(),tipo:'post',texto:'',imgs:[]};responder(Object.assign({},p,{texto:(p.texto?p.texto+'. ':'')+'Quero outra ideia, diferente de: '+m.dados.ideia}))}
+  if(x=='desposta'){m.dados.status='rascunho';delete m.dados.postadoEm;await guarda(m);fecha();desenhaChat(false)}
+  if(x=='apaga'){if(!b.dataset.s){b.dataset.s=1;b.querySelector('span:last-child').textContent='Toque de novo para apagar';return}await ZAP.tirar(m.id);msgs=msgs.filter(y=>y.id!=m.id);fecha();desenhaChat(false);desenhaPerfilSeAberto()}
+  if(x=='edita'){fecha();editaMsg(m)}}}
+function editaMsg(m){let campos;
+ if(m.tipo=='post'&&m.de=='ela')campos=[['ideia','O que ela decidiu'],['cena','A foto (português)'],['prompt_imagem','Cena para a imagem (inglês)'],['legenda','Legenda'],['hashtags','Hashtags']];
+ else if(m.tipo=='noticia'&&m.de=='ela')campos=[['titulo','Título'],['resumo','Resumo'],['comentario','Comentário dela'],['conferir','O que conferir']];
+ else campos=[['texto','Texto']];
+ const val=k=>k=='texto'?m.texto:k=='hashtags'?m.dados.hashtags.join(' '):m.dados[k];
+ const sh=folha(`<h3>Editar</h3>${campos.map(([k,n])=>`<label class="lbl">${n}</label><textarea data-k="${k}">${esc(val(k))}</textarea>`).join('')}<div class="ab"><button class="b" id="eOk">Salvar</button><button class="g" id="eNo">Cancelar</button></div>`);
+ sh.querySelector('#eNo').onclick=()=>fecha();
+ sh.querySelector('#eOk').onclick=async()=>{sh.querySelectorAll('[data-k]').forEach(t=>{const k=t.dataset.k,v=t.value.trim();if(k=='texto')m.texto=v;else if(k=='hashtags')m.dados.hashtags=v.split(/\s+/).filter(Boolean).map(x=>x[0]=='#'?x:'#'+x);else m.dados[k]=v});await guarda(m);fecha();desenhaChat(false);if(pilha.length)desenhaPgs();toast('Salvo')}}
+
+/* ---------- folha e páginas ---------- */
+let aoFechar=null;
+function folha(html,cancel){fecha();aoFechar=cancel||null;const f=document.createElement('div');f.className='fundo';f.innerHTML=`<div class="sh" role="dialog" aria-modal="true"><div class="puxa"></div>${html}</div>`;f.onclick=e=>{if(e.target==f)fecha()};$('#shs').appendChild(f);return f.querySelector('.sh')}
+function fecha(semCancelar){const c=aoFechar;aoFechar=null;$('#shs').innerHTML='';if(c&&!semCancelar)c()}
+let pilha=[],anim=false;
+function abrePg(id){pilha.push(id);anim=true;desenhaPgs()}
+function voltaPg(){pilha.pop();anim=false;desenhaPgs();if(!pilha.length)desenhaChat(false)}
+function desenhaPgs(){const ant=$('#pgs .pg:last-of-type'),rol=ant&&!anim?{id:ant.dataset.pg,y:ant.scrollTop}:null;$('#pgs').innerHTML=pilha.map((id,i)=>`<section class="pg${anim&&i==pilha.length-1?' anima':''}" data-pg="${id}" style="z-index:${10+i}" aria-label="${esc(TIT[id]||'')}"><div class="in"><header><button class="ic" data-volta aria-label="Voltar">←</button><h2>${esc(TIT[id]||'')}</h2></header><div class="cx"></div></div></section>`).join('');
+ pilha.forEach(id=>{const sec=$(`#pgs [data-pg="${id}"]`);sec.querySelector('[data-volta]').onclick=voltaPg;PG[id](sec.querySelector('.cx'))});
+ document.querySelectorAll('#pgs .pg').forEach((s,i,a)=>s.style.display=i==a.length-1?'block':'none');const nv=$('#pgs .pg:last-of-type');if(rol&&nv&&nv.dataset.pg==rol.id)nv.scrollTop=rol.y;anim=false;topo()}
+function desenhaPerfilSeAberto(){if(pilha.length&&pilha[pilha.length-1]=='perfil')desenhaPgs()}
+const TIT={perfil:'',cartao:'Cartão de personalidade',ficha:'Ficha completa',cerebro:'Cérebro',treino:'Material de treino',copia:'Cópia de segurança',diario:'Diário dela',redes:'Redes dela'};
+$('#abrePerfil').onclick=()=>abrePg('perfil');
+$('#menuTop').onclick=()=>{const sh=folha(`<button class="linha" data-g="perfil"><span class="e">👤</span>Perfil dela</button><button class="linha" data-g="diario"><span class="e">📓</span>Diário dela</button><button class="linha" data-g="cartao"><span class="e">📇</span>Cartão de personalidade</button><button class="linha" data-g="cerebro"><span class="e">🧠</span><span>Cérebro<small>${nomeCer()}</small></span></button><button class="linha" data-g="ficha"><span class="e">📚</span>Ficha completa</button>`);
+ sh.onclick=e=>{const b=e.target.closest('[data-g]');if(b){fecha();abrePg(b.dataset.g)}}};
+
+const PG={};
+/* ---------- perfil ---------- */
+PG.perfil=cx=>{const p=S.perfil,posts=msgs.filter(m=>m.de=='ela'&&m.tipo=='post'&&m.dados),prox=posts.filter(m=>m.dados.status!='postado').slice(-1)[0],feitos=posts.filter(m=>m.dados.status=='postado').reverse(),nd=msgs.filter(m=>m.tipo=='diario').length,ns=msgs.filter(m=>m.estrela).length;
+ cx.innerHTML=`<div class="capa"><div class="av">${p.foto?`<img src="${p.foto}" alt="Foto da Tamaki">`:'<span>🧝🏽‍♀️</span>'}<button class="troca" id="pFoto" aria-label="Trocar a foto">📷</button></div>
+  <input class="campo nome" id="pNome" value="${esc(p.nome)}" aria-label="Nome"><input class="campo rec" id="pRec" value="${esc(p.recado)}" aria-label="Recado" placeholder="Recado">
+  <div class="atalhos"><button class="at" data-v="conversa"><span>💬</span>Conversar</button><button class="at" data-v="post"><span>📸</span>Pedir post</button><button class="at" data-g="cartao"><span>📇</span>Cartão</button></div></div>
+  <div class="sec"><h3>Sobre</h3><textarea id="pSobre" aria-label="Sobre" style="border:0;padding:0;background:none">${esc(p.sobre)}</textarea></div>
+  <div class="sec"><h3>Próximo post${prox?`<button data-id="${prox.id}" data-a="cppost">Copiar legenda</button>`:''}</h3>${prox?`<div class="mini">${polaroid(prox,1)}<div><p style="margin:0 0 6px">${br(prox.dados.ideia)}</p><p class="m" style="white-space:pre-wrap">${esc(prox.dados.legenda)}</p><div class="acoes"><button class="bt" data-a="cpimg" data-id="${prox.id}">🎨 Prompt</button><button class="bt" data-a="foto" data-id="${prox.id}">🖼 Imagem</button><button class="bt p" data-a="postei" data-id="${prox.id}">✅ Postei</button></div></div></div>`:`<p class="m" style="margin:0">Nenhum rascunho. Toque em 📸 Pedir post e ela decide o próximo.</p>`}</div>
+  <div class="sec"><h3>Redes<button data-g="redes">Editar</button></h3>${p.redes.map(r=>/^https?:\/\//i.test(r.u)?`<a class="rede" href="${esc(r.u)}" target="_blank" rel="noopener noreferrer"><span class="e">${esc(r.e)}</span><span><b>${esc(r.n)}</b><small>${esc(r.u.replace(/^https?:\/\/(www\.)?/,''))}</small></span></a>`:`<button class="rede linha" data-g="redes" style="padding:9px 0"><span class="e">${esc(r.e)}</span><span><b>${esc(r.n)}</b><small>Toque para pôr o link</small></span></button>`).join('')}</div>
+  <div class="sec"><h3>Postados (${feitos.length})</h3>${feitos.length?`<div class="grade">${feitos.map(m=>`<button data-id="${m.id}" data-abre aria-label="${esc(m.dados.ideia)}">${m.img?`<img src="${urlDe(m.img)}" alt="">`:esc(m.dados.ideia.slice(0,60))}</button>`).join('')}</div>`:'<p class="m" style="margin:0">Quando você tocar em ✅ Postei, o post aparece aqui.</p>'}</div>
+  <div class="sec"><button class="linha" data-g="diario"><span class="e">📓</span><span>Diário dela<small>${nd} ${nd==1?'página':'páginas'}</small></span></button>
+   <button class="linha" data-g="cerebro"><span class="e">🧠</span><span>Cérebro<small>${nomeCer()}</small></span></button>
+   <button class="linha" data-g="treino"><span class="e">🎓</span><span>Material de treino<small>${ns} ${ns==1?'resposta marcada':'respostas marcadas'} com ⭐</small></span></button>
+   <button class="linha" data-g="ficha"><span class="e">📚</span><span>Ficha completa<small>Módulos, documentos e prompt para a Reunião</small></span></button>
+   <button class="linha" data-g="copia"><span class="e">💾</span><span>Cópia de segurança</span></button></div>`;
+ const liga=(sel,k)=>cx.querySelector(sel).oninput=e=>{p[k]=e.target.value;save();topo()};liga('#pNome','nome');liga('#pRec','recado');liga('#pSobre','sobre');
+ cx.querySelector('#pFoto').onclick=()=>$('#fFoto').click();
+ cx.onclick=e=>{const g=e.target.closest('[data-g]');if(g){e.preventDefault();return abrePg(g.dataset.g)}
+  const v=e.target.closest('[data-v]');if(v){modo=v.dataset.v;desenhaModos();pilha=[];desenhaPgs();$('#txt').focus();return}
+  const a=e.target.closest('[data-a]');if(a){const m=msgs.find(x=>x.id==a.dataset.id);if(!m)return;if(a.dataset.a=='cpimg')cp(promptImg(m.dados));if(a.dataset.a=='cppost')cp(textoPost(m.dados));if(a.dataset.a=='foto'){alvoFoto=m.id;$('#fImg').click()}if(a.dataset.a=='postei')marcaPostado(m);return}
+  const ab=e.target.closest('[data-abre]');if(ab){const m=msgs.find(x=>x.id==ab.dataset.id);if(m){const sh=folha(`${polaroid(m)}<div class="acoes"><button class="bt" id="gC">📋 Copiar legenda</button><button class="bt" id="gF">🖼 Trocar imagem</button></div>`);sh.querySelector('#gC').onclick=()=>cp(textoPost(m.dados));sh.querySelector('#gF').onclick=()=>{fecha();alvoFoto=m.id;$('#fImg').click()}}}}};
+$('#fFoto').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;try{S.perfil.foto=await b64(await reduz(f,320,.85));save();topo();desenhaPgs();toast('Foto trocada')}catch(x){toast('Não consegui abrir a imagem')}};
+
+PG.redes=cx=>{const p=S.perfil;cx.innerHTML=`<p class="m">Os links aparecem no perfil para você abrir rápido na hora de postar.</p>${p.redes.map((r,i)=>`<div class="c"><div style="display:grid;grid-template-columns:64px 1fr auto;gap:8px"><input data-r="${i}" data-k="e" value="${esc(r.e)}" aria-label="Ícone" style="text-align:center"><input data-r="${i}" data-k="n" value="${esc(r.n)}" aria-label="Nome da rede"><button class="x" data-tira="${i}" aria-label="Tirar ${esc(r.n)}">×</button></div><input data-r="${i}" data-k="u" value="${esc(r.u)}" placeholder="https://" inputmode="url" aria-label="Link" style="margin-top:8px"></div>`).join('')}<div class="ab"><button class="b" id="rMais">+ Rede</button></div>`;
+ cx.oninput=e=>{const t=e.target;if(t.dataset.r!=null){p.redes[t.dataset.r][t.dataset.k]=t.value;save()}};
+ cx.onclick=e=>{const t=e.target.closest('[data-tira]');if(t){p.redes.splice(+t.dataset.tira,1);save();desenhaPgs()}if(e.target.id=='rMais'){p.redes.push({e:'🔗',n:'Nova rede',u:''});save();desenhaPgs()}}};
+
+PG.diario=cx=>{const di=msgs.filter(m=>m.tipo=='diario').slice().reverse();cx.innerHTML=`<p class="m">É daqui que ela tira o que viveu. Para escrever uma página nova, use 📓 Diário na conversa.</p>`+(di.length?di.map(m=>`<div class="c"><span class="cap">${new Date(m.t).toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</span>${(m.imgs||[]).length?`<div class="thumbs">${m.imgs.map(b=>`<img src="${urlDe(b)}" alt="">`).join('')}</div>`:''}<p style="white-space:pre-wrap;margin:4px 0 8px">${esc(m.texto)}</p><div class="ab" style="margin:0"><button class="g" data-ed="${m.id}">✏️ Editar</button></div></div>`).join(''):'<div class="c"><p class="m" style="margin:0">Nenhuma página ainda.</p></div>');
+ cx.onclick=e=>{const b=e.target.closest('[data-ed]');if(b)editaMsg(msgs.find(x=>x.id==b.dataset.ed))}};
+
+/* ---------- cartão de personalidade ---------- */
+PG.cartao=cx=>{const p=S.perfil,c=cartao(),dicas={ess:'Quem ela é em uma ou duas frases.',fala:'Vícios de linguagem, gírias, ritmo.',ex:'Uma fala por linha. Quanto mais, melhor ela imita.',apar:'Vai na frente de todo prompt de imagem. Mantenha igual para a aparência não mudar.',estilo:'Vai no fim de todo prompt de imagem.',lora:'Quando você treinar o estilo dela no Kaggle, ponha aqui a palavra que chama o LoRA.',marca:'Sempre entra no fim das hashtags.',voz:''};
+ cx.innerHTML=`<div class="cartao"><div class="av">${p.foto?`<img src="${p.foto}" alt="">`:'<span>🧝🏽‍♀️</span>'}</div><div><b>${esc(p.nome)}</b><p>${esc(cv('ess'))}</p><span class="chip">🎙 ${esc(cv('voz')||'sem voz ligada')}</span></div></div>
+ <p class="m">O cartão é a alma dela: toda resposta e todo post partem daqui. Ele entra também na Reunião da Central e na Escrita. Serve de modelo para qualquer personagem novo.</p>
+ ${c.f.map((x,j)=>x[2]=='voz'?`<label class="lbl" for="vozSel">Voz ligada <small>(do Estúdio de voz)</small></label><select id="vozSel"><option value="">Nenhuma</option>${vozes.map(v=>`<option value="${esc(v.id)}" ${v.id==p.vozId?'selected':''}>${esc(v.nome||v.id)}</option>`).join('')}</select>${vozes.length?'':'<p class="m">Nenhum cartão de voz neste aparelho ainda.</p>'}`
+  :`<label class="lbl" for="cf${j}">${esc(x[0])}${dicas[x[2]]?` <small>· ${dicas[x[2]]}</small>`:''}</label><textarea id="cf${j}" data-j="${j}">${esc(x[1])}</textarea>`).join('')}
+ <div class="c"><b>Levar o cartão</b><p class="m">Baixe para guardar, usar com outra IA ou treinar no Kaggle. Abrir um cartão troca os campos acima.</p><div class="ab"><button class="b" id="cBx">💳 Baixar cartão</button><label class="g">📂 Abrir cartão<input type="file" id="cAb" accept=".json,application/json" hidden></label><button class="g" id="cCp">📋 Copiar como prompt</button></div></div>`;
+ cx.oninput=e=>{const t=e.target;if(t.dataset.j!=null){c.f[t.dataset.j][1]=t.value;save()}};
+ cx.querySelector('#vozSel').onchange=e=>{const v=vozes.find(x=>x.id==e.target.value);p.vozId=v?v.id:'';cset('voz',v?(v.nome||v.id):'');desenhaPgs()};
+ cx.querySelector('#cBx').onclick=()=>{const o={tipo:'tamaki-persona',versao:1,id:'persona-'+(p.nome||'tamaki').toLowerCase().normalize('NFD').replace(/[^a-z0-9]+/g,'-'),nome:p.nome,foto:p.foto,sobre:p.sobre,vozId:p.vozId,criado:Date.now(),campos:Object.fromEntries(c.f.map(x=>[x[2]||x[0],{rotulo:x[0],valor:x[1]}]))};baixar(new Blob([JSON.stringify(o,null,1)],{type:'application/json'}),o.id+'.persona.json');toast('Cartão baixado')};
+ cx.querySelector('#cAb').onchange=async e=>{try{const o=JSON.parse(await e.target.files[0].text());if(o.tipo!='tamaki-persona')throw 0;for(const k in o.campos){const x=c.f.find(y=>(y[2]||y[0])==k);if(x)x[1]=o.campos[k].valor;else c.f.push([o.campos[k].rotulo,o.campos[k].valor,k])}if(o.nome)p.nome=o.nome;if(o.foto)p.foto=o.foto;if(o.sobre)p.sobre=o.sobre;save();desenhaPgs();toast('Cartão aberto')}catch(x){toast('Isso não é um cartão de personalidade')}};
+ cx.querySelector('#cCp').onclick=()=>cp(quemE())};
+
+/* ---------- cérebro ---------- */
+PG.cerebro=cx=>{cx.innerHTML=`<p class="m">Escolha quem pensa pela Tamaki. Dá para trocar quando quiser; o cartão, o diário e as notícias continuam os mesmos.</p>
+ <label class="opc ${CER.modo=='manual'?'on':''}"><input type="radio" name="cm" value="manual" ${CER.modo=='manual'?'checked':''}><span><b>Copiar e colar</b><br><span class="m">Grátis e sem chave. O app monta o pedido, você cola em qualquer IA e traz a resposta de volta.</span></span></label>
+ <label class="opc ${CER.modo=='gemini'?'on':''}"><input type="radio" name="cm" value="gemini" ${CER.modo=='gemini'?'checked':''}><span><b>Gemini grátis</b><br><span class="m">Responde aqui mesmo e lê os prints. Precisa de uma chave grátis do Google AI Studio. No plano grátis, o Google pode usar o que você manda para melhorar os modelos dele.</span></span></label>
+ <label class="opc ${CER.modo=='proprio'?'on':''}"><input type="radio" name="cm" value="proprio" ${CER.modo=='proprio'?'checked':''}><span><b>Modelo próprio</b><br><span class="m">A IA que você treinar no Kaggle (ou rodar no Termux). Só funciona com o notebook ligado e um endereço público, no formato da OpenAI (llama.cpp, Ollama, vLLM).</span></span></label>
+ <div class="c ${CER.modo=='gemini'?'':'hide'}"><label class="lbl" for="gK">Chave do Gemini</label><input id="gK" type="password" value="${esc(CER.chave)}" placeholder="Cole a chave" autocomplete="off"><p class="m">Crie em <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer">aistudio.google.com/apikey</a>. Fica só neste aparelho.</p>
+  <label class="lbl" for="gM">Modelo</label><input id="gM" list="gL" value="${esc(CER.modelo)}"><datalist id="gL"><option value="gemini-2.5-flash"><option value="gemini-2.5-flash-lite"><option value="gemini-3-flash-preview"></datalist><p class="m">Se der erro de modelo, troque por outro da lista.</p></div>
+ <div class="c ${CER.modo=='proprio'?'':'hide'}"><label class="lbl" for="pU">Endereço do modelo</label><input id="pU" value="${esc(CER.url)}" placeholder="https://…trycloudflare.com" inputmode="url"><label class="lbl" for="pM">Nome do modelo <small>(opcional)</small></label><input id="pM" value="${esc(CER.mProprio)}" placeholder="tamaki"></div>
+ <div class="ab"><button class="b" id="cT">Testar</button><span id="cR"></span></div>`;
+ cx.onchange=e=>{if(e.target.name=='cm'){CER.modo=e.target.value;salvaCer();desenhaPgs();desenhaModos()}};
+ cx.oninput=e=>{const m={gK:'chave',gM:'modelo',pU:'url',pM:'mProprio'}[e.target.id];if(m){CER[m]=e.target.value.trim();salvaCer()}};
+ cx.querySelector('#cT').onclick=async()=>{const r=cx.querySelector('#cR');r.textContent='Perguntando…';try{const t=await pensar(quemE(),[{role:'user',text:'Diga oi para o Tama em uma frase, do seu jeito.'}]);r.textContent='“'+t.slice(0,160)+'”'}catch(e){r.textContent=e.message=='cancelado'?'':'❌ '+e.message}}};
+
+/* ---------- material de treino ---------- */
+PG.treino=cx=>{const est=msgs.filter(m=>m.estrela&&m.de=='ela'),ex=cv('ex').split('\n').filter(x=>x.trim()).length,fotos=msgs.filter(m=>m.de=='ela'&&m.tipo=='post'&&m.img).length;
+ cx.innerHTML=`<div class="c"><b>Para a IA dela (texto)</b><p class="m">Cada resposta marcada com ⭐ vira um exemplo de como a Tamaki fala. Corrija antes de marcar: o treino copia o que estiver escrito. Para um ajuste fino que pegue bem os vícios de linguagem, junte algumas centenas.</p>
+  <p style="font-size:22px;font-weight:800;margin:10px 0 0">${est.length} <span class="m">respostas com ⭐ · ${ex} exemplos de fala no cartão</span></p>
+  <div class="ab"><label><input type="checkbox" id="tEx" checked> Incluir os exemplos do cartão</label></div><div class="ab"><button class="b" id="tBx">⬇ Baixar para o Kaggle (.jsonl)</button></div></div>
+ <div class="c"><b>Para o estilo das imagens (LoRA)</b><p class="m">Junta as imagens que você pôs nos posts, cada uma com um .txt da descrição. É o formato que os notebooks de LoRA usam. Só entram as imagens que ficaram com a cara dela; tire as outras do post antes.</p>
+  <p style="font-size:22px;font-weight:800;margin:10px 0 0">${fotos} <span class="m">${fotos==1?'imagem':'imagens'}</span></p><div class="ab"><button class="b" id="tZp" ${fotos?'':'disabled'}>⬇ Baixar imagens e legendas (.zip)</button></div></div>`;
+ cx.querySelector('#tBx').onclick=()=>{const sis='Você é '+S.perfil.nome+'. '+cv('ess')+' Jeito de falar: '+cv('fala'),L=[];
+  for(const m of est){const p=msgs.find(x=>x.id==m.pedido);let u,a;
+   if(m.tipo=='conversa'){u=(p&&p.texto)||'Oi';a=m.texto}else if(m.tipo=='noticia'){u='Comenta essa notícia: '+m.dados.titulo+'. '+m.dados.resumo;a=m.dados.comentario}else if(m.tipo=='post'){u='Escreva a legenda do seu post: '+m.dados.cena;a=m.dados.legenda}
+   if(u&&a)L.push({messages:[{role:'system',content:sis},{role:'user',content:u},{role:'assistant',content:a}]})}
+  if(cx.querySelector('#tEx').checked)cv('ex').split('\n').map(x=>x.trim()).filter(Boolean).forEach(a=>L.push({messages:[{role:'system',content:sis},{role:'user',content:'Fala alguma coisa do seu dia.'},{role:'assistant',content:a}]}));
+  if(!L.length)return toast('Ainda não tem nada para baixar');baixar(new Blob([L.map(x=>JSON.stringify(x)).join('\n')],{type:'application/jsonl'}),'tamaki-treino-'+new Date().toISOString().slice(0,10)+'.jsonl');toast(L.length+' exemplos baixados')};
+ cx.querySelector('#tZp').onclick=async()=>{const arqs=[],enc=new TextEncoder();let i=0;for(const m of msgs.filter(m=>m.de=='ela'&&m.tipo=='post'&&m.img)){i++;const n='tamaki_'+String(i).padStart(3,'0');arqs.push({nome:n+'.jpg',dados:new Uint8Array(await m.img.arrayBuffer())});arqs.push({nome:n+'.txt',dados:enc.encode([cv('lora'),cv('apar'),m.dados.prompt_imagem].filter(Boolean).join(', '))})}
+  baixar(zip(arqs),'tamaki-lora-'+new Date().toISOString().slice(0,10)+'.zip');toast(i+' imagens no .zip')}};
+// zip simples (sem compressão), igual ao da Central
+const CRC=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}return t})();
+const crc32=u=>{let c=0xFFFFFFFF;for(let i=0;i<u.length;i++)c=CRC[(c^u[i])&255]^(c>>>8);return(c^0xFFFFFFFF)>>>0};
+function zip(arqs){const enc=new TextEncoder(),partes=[],cent=[];let off=0;for(const a of arqs){const n=enc.encode(a.nome),c=crc32(a.dados),h=new DataView(new ArrayBuffer(30));h.setUint32(0,0x04034b50,true);h.setUint16(4,20,true);h.setUint16(8,0,true);h.setUint32(14,c,true);h.setUint32(18,a.dados.length,true);h.setUint32(22,a.dados.length,true);h.setUint16(26,n.length,true);partes.push(h.buffer,n,a.dados);
+ const d=new DataView(new ArrayBuffer(46));d.setUint32(0,0x02014b50,true);d.setUint16(4,20,true);d.setUint16(6,20,true);d.setUint32(16,c,true);d.setUint32(20,a.dados.length,true);d.setUint32(24,a.dados.length,true);d.setUint16(28,n.length,true);d.setUint32(42,off,true);cent.push(d.buffer,n);off+=30+n.length+a.dados.length}
+ const tam=cent.reduce((s,x)=>s+(x.byteLength||x.length),0),f=new DataView(new ArrayBuffer(22));f.setUint32(0,0x06054b50,true);f.setUint16(8,arqs.length,true);f.setUint16(10,arqs.length,true);f.setUint32(12,tam,true);f.setUint32(16,off,true);return new Blob([...partes,...cent,f.buffer],{type:'application/zip'})}
+
+/* ---------- cópia de segurança ---------- */
+PG.copia=cx=>{cx.innerHTML=`<div class="c"><b>Tudo da Tamaki</b><p class="m">Ficha, cartão, perfil, conversa, diário, notícias e posts com as imagens. Use para trocar de aparelho ou guardar.</p><div class="ab"><button class="b" id="kBx">⬇ Baixar tudo (.json)</button><label class="g">↺ Restaurar tudo<input type="file" id="kAb" accept=".json,application/json" hidden></label></div><p class="m" id="kR"></p></div>
+ <div class="c"><b>Só a ficha</b><p class="m">O mesmo arquivo de antes (tamaki-ficha.json).</p><div class="ab"><button class="g" id="fBx">⬇ Baixar ficha</button><label class="g">↺ Restaurar ficha<input type="file" id="fAb" accept=".json,application/json" hidden></label></div></div>`;
+ const r=cx.querySelector('#kR');
+ cx.querySelector('#kBx').onclick=async()=>{r.textContent='Juntando…';const ms=[];for(const m of msgs){const o=Object.assign({},m);o.imgs=await Promise.all((m.imgs||[]).map(b64));if(m.img)o.img=await b64(m.img);ms.push(o)}baixar(new Blob([JSON.stringify({tipo:'tamaki-tudo',em:Date.now(),ficha:S,msgs:ms})],{type:'application/json'}),'tamaki-tudo-'+new Date().toISOString().slice(0,10)+'.json');r.textContent='Baixado.'};
+ cx.querySelector('#kAb').onchange=async e=>{try{r.textContent='Restaurando…';const o=JSON.parse(await e.target.files[0].text());if(o.tipo!='tamaki-tudo')throw 0;S=valida(o.ficha);garante();save();
+  for(const m of o.msgs){m.imgs=await Promise.all((m.imgs||[]).map(deB64));if(m.img)m.img=await deB64(m.img);await ZAP.por(m)}msgs=((await ZAP.todas())||[]).sort((a,b)=>a.t-b.t);r.textContent='Restaurado.';topo();desenhaChat()}catch(x){r.textContent='Arquivo inválido.'}};
+ cx.querySelector('#fBx').onclick=()=>baixar(new Blob([JSON.stringify(S,null,1)],{type:'application/json'}),'tamaki-ficha.json');
+ cx.querySelector('#fAb').onchange=async e=>{try{S=valida(JSON.parse(await e.target.files[0].text()));garante();save();topo();toast('Ficha restaurada')}catch(x){toast('Arquivo inválido')}}};
+
+/* ---------- ficha completa (o editor de antes) ---------- */
 const lib=src=>new Promise((ok,no)=>{if(document.querySelector(`script[src="${src}"]`))return ok();const s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=()=>no(new Error('sem internet para ler este tipo de arquivo'));document.head.appendChild(s)});
 const CDN='https://cdnjs.cloudflare.com/ajax/libs/';
 async function extrair(f){const ext=(f.name.split('.').pop()||'').toLowerCase();
@@ -86,38 +536,40 @@ async function extrair(f){const ext=(f.name.split('.').pop()||'').toLowerCase();
     const txt=[new TextDecoder('utf-16le').decode(u),new TextDecoder('windows-1252').decode(u)].map(s=>(s.match(/[A-Za-zÀ-ÿ0-9 .,;:!?()"“”'’\-–—\n\r]{12,}/gu)||[]).filter(parece).join('\n')).sort((a,b)=>(b.match(/\p{L}{3,}/gu)||[]).length-(a.match(/\p{L}{3,}/gu)||[]).length)[0];
     return {texto:(txt||'').replace(/\s+\n/g,'\n').trim(),info:'texto aproximado (Word antigo). Se ficar estranho, salve como .docx ou .pdf'}}
   return {texto:(await f.text()).trim()}}
-async function adicionar(fs){for(const f of fs){st('lendo '+f.name+'…');const d={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),nome:f.name,tipo:f.type,tamanho:f.size,blob:f,usar:1,criado:Date.now(),texto:'',info:''};
+async function adicionar(fs){for(const f of fs){toast('Lendo '+f.name+'…');const d={id:uid(),nome:f.name,tipo:f.type,tamanho:f.size,blob:f,usar:1,criado:Date.now(),texto:'',info:''};
   try{Object.assign(d,await extrair(f))}catch(e){d.info='não consegui ler o texto ('+e.message+'); o arquivo ficou guardado'}
-  try{await guardar(d)}catch(e){st('sem espaço para guardar '+f.name);continue}}await listar();st(fs.length==1?'documento guardado':fs.length+' documentos guardados');render()}
+  try{await DOCS.por(d)}catch(e){toast('Sem espaço para guardar '+f.name);continue}}await listar();toast(fs.length==1?'Documento guardado':fs.length+' documentos guardados');desenhaPgs()}
 const kb=n=>n>1e6?(n/1e6).toFixed(1)+' MB':Math.ceil(n/1e3)+' KB',palavras=t=>t?t.split(/\s+/).length:0;
-function dv(){return `<div class="c"><b>Documentos da Tamaki</b><p class="m">Guarde aqui roteiros, histórias e anotações sobre ela (.pdf, .docx, .doc, .txt). Ficam só neste aparelho. Os marcados com “Usar” entram no prompt e no “Colocar nas palavras da Tamaki” da Escrita.</p>
+let tab='0',aberto=null;
+function dv(){return `<div class="c"><b>Documentos da Tamaki</b><p class="m">Guarde aqui roteiros, histórias e anotações sobre ela (.pdf, .docx, .doc, .txt). Ficam só neste aparelho. Os marcados com “Usar” entram nas respostas dela, no prompt e no “Colocar nas palavras da Tamaki” da Escrita.</p>
   <div class="ab" style="margin-top:10px"><label class="b">＋ Adicionar documentos<input type="file" hidden multiple accept=".pdf,.doc,.docx,.txt,.md,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" onchange="adicionar([...this.files]);this.value=''"></label></div></div>
-  <div class="c">${docs.length?docs.map(d=>`<div class="doc"><span class="ic">${/pdf$/i.test(d.nome)?'📕':/docx?$/i.test(d.nome)?'📘':'📄'}</span><div><b>${esc(d.nome)}</b><span class="m">${kb(d.tamanho)} · ${palavras(d.texto)} palavras${d.info?' · '+esc(d.info):''}</span></div>
+  <div class="c">${docs.length?docs.map(d=>`<div class="doc"><span class="ic2">${/pdf$/i.test(d.nome)?'📕':/docx?$/i.test(d.nome)?'📘':'📄'}</span><div><b>${esc(d.nome)}</b><span class="m">${kb(d.tamanho)} · ${palavras(d.texto)} palavras${d.info?' · '+esc(d.info):''}</span></div>
     <div class="ab"><label><input type="checkbox" ${d.usar?'checked':''} onchange="DU('${d.id}',this.checked)"> Usar</label><button class="g" onclick="DV('${d.id}')">Ver texto</button><button class="g" onclick="DA('${d.id}')">Abrir</button><button class="g" onclick="DX('${d.id}',this)">Remover</button></div>${aberto==d.id?`<pre>${esc(d.texto||'(sem texto)')}</pre>`:''}</div>`).join(''):'<p class="m">Nenhum documento ainda.</p>'}</div>`}
-let aberto=null;
 window.adicionar=adicionar;
-window.DU=async(id,v)=>{const d=docs.find(x=>x.id==id);d.usar=v?1:0;await guardar(d);st('salvo')};
-window.DV=id=>{aberto=aberto==id?null:id;render()};
+window.DU=async(id,v)=>{const d=docs.find(x=>x.id==id);d.usar=v?1:0;await DOCS.por(d);toast('Salvo')};
+window.DV=id=>{aberto=aberto==id?null:id;desenhaPgs()};
 window.DA=id=>{const d=docs.find(x=>x.id==id);window.open(URL.createObjectURL(d.blob),'_blank')||baixar(d.blob,d.nome)};
-window.DX=async(id,b)=>{if(!b.dataset.s){b.dataset.s=1;b.textContent='Toque de novo para remover';return}await tirar(id);await listar();render()};
-
-/* ---------- telas ---------- */
-function mv(i){const m=S.mods[i];return `<div class="c"><input class="ti" data-w="t" data-m="${i}" value="${esc(m.t)}" oninput="E(this)" aria-label="Nome do módulo">`+m.f.map((x,j)=>`<div class="r"><input class="lb" data-w="f" data-m="${i}" data-f="${j}" data-p="0" value="${esc(x[0])}" oninput="E(this)" aria-label="Nome do campo"><button class="x" onclick="A('delf',${i},${j})" aria-label="Remover campo">×</button><textarea data-w="f" data-m="${i}" data-f="${j}" data-p="1" oninput="E(this)" aria-label="${esc(x[0])}">${esc(x[1])}</textarea></div>`).join('')+`<div class="ab"><button class="b" onclick="A('addf',${i})">+ Campo</button><label><input type="checkbox" data-w="i" data-m="${i}" ${m.inc?'checked':''} onchange="E(this)"> Incluir no prompt</label><button class="g" onclick="A('delm',${i},this)">Excluir módulo</button></div></div>`}
-function lv(){return `<div class="c">`+S.links.map((l,j)=>`<div class="r"><input class="lb" data-w="l" data-l="${j}" data-p="n" value="${esc(l.n)}" oninput="E(this)" aria-label="Nome"><button class="x" onclick="A('dell',${j})" aria-label="Remover link">×</button><input class="f" data-w="l" data-l="${j}" data-p="u" value="${esc(l.u)}" placeholder="https://" oninput="E(this)" aria-label="Endereço"><input class="f" data-w="l" data-l="${j}" data-p="d" value="${esc(l.d)}" placeholder="Para que serve" oninput="E(this)" aria-label="Uso">${/^https?:\/\//i.test(l.u)?`<a href="${esc(l.u)}" target="_blank" rel="noopener noreferrer">Abrir ${esc(l.n)}</a>`:''}</div>`).join('')+`<div class="ab"><button class="b" onclick="A('addl')">+ Link</button></div></div>`}
-function pv(){return `<div class="dlg"><span class="cap">PROMPT DA TAMAKI</span><textarea id="pr" readonly>${esc(prompt())}</textarea></div><div class="ab"><button class="b" onclick="cp($('#pr').value)">Copiar prompt</button><span>Módulos desmarcados e documentos sem “Usar” ficam de fora.</span></div>
-  <div class="c"><b>Cópia de segurança</b><p class="m">A ficha se salva sozinha neste aparelho. Para levar a outro aparelho ou guardar uma cópia, baixe o arquivo.</p><div class="ab" style="margin-top:10px"><button class="b" onclick="baixar(new Blob([JSON.stringify(S,null,1)],{type:'application/json'}),'tamaki-ficha.json')">⬇ Baixar ficha (.json)</button><label class="g">↺ Restaurar de arquivo<input type="file" accept=".json,application/json" hidden onchange="OF(this)"></label></div></div>`}
-function render(){if(tab!='L'&&tab!='P'&&tab!='D'&&!S.mods[tab])tab=S.mods.length?'0':'L';
-$('#nv').innerHTML=[...S.mods.map((m,i)=>[String(i),m.t]),['D','📄 Documentos'],['L','Links'],['P','Prompt']].map(([k,n])=>`<button class="${k==tab?'on':''}" onclick="A('tab','${k}')">${esc(n)}</button>`).join('')+`<button onclick="A('addm')">+ Módulo</button>`;
-$('#mn').innerHTML=tab=='L'?lv():tab=='P'?pv():tab=='D'?dv():mv(tab)}
+window.DX=async(id,b)=>{if(!b.dataset.s){b.dataset.s=1;b.textContent='Toque de novo para remover';return}await DOCS.tirar(id);await listar();desenhaPgs()};
+function mv(i){const m=S.mods[i];return `<div class="c">${m.id=='cartao'?'<p class="m" style="margin:0 0 10px">Este módulo também aparece, mais bonito, em Perfil › Cartão.</p>':''}<input class="ti" data-w="t" data-m="${i}" value="${esc(m.t)}" oninput="E(this)" aria-label="Nome do módulo">`+m.f.map((x,j)=>`<div class="r"><input class="lb" data-w="f" data-m="${i}" data-f="${j}" data-p="0" value="${esc(x[0])}" oninput="E(this)" aria-label="Nome do campo"><button class="x" onclick="A('delf',${i},${j})" aria-label="Remover campo">×</button><textarea data-w="f" data-m="${i}" data-f="${j}" data-p="1" oninput="E(this)" aria-label="${esc(x[0])}">${esc(x[1])}</textarea></div>`).join('')+`<div class="ab"><button class="b" onclick="A('addf',${i})">+ Campo</button><label><input type="checkbox" data-w="i" data-m="${i}" ${m.inc?'checked':''} onchange="E(this)"> Incluir no prompt</label>${m.id=='cartao'?'':`<button class="g" onclick="A('delm',${i},this)">Excluir módulo</button>`}</div></div>`}
+function lv(){return `<div class="c"><p class="m" style="margin:0 0 10px">Ferramentas do projeto. As redes dela ficam em Perfil › Redes.</p>`+S.links.map((l,j)=>`<div class="r"><input class="lb" data-w="l" data-l="${j}" data-p="n" value="${esc(l.n)}" oninput="E(this)" aria-label="Nome"><button class="x" onclick="A('dell',${j})" aria-label="Remover link">×</button><input class="f" data-w="l" data-l="${j}" data-p="u" value="${esc(l.u)}" placeholder="https://" oninput="E(this)" aria-label="Endereço"><input class="f" data-w="l" data-l="${j}" data-p="d" value="${esc(l.d)}" placeholder="Para que serve" oninput="E(this)" aria-label="Uso">${/^https?:\/\//i.test(l.u)?`<a href="${esc(l.u)}" target="_blank" rel="noopener noreferrer">Abrir ${esc(l.n)}</a>`:''}</div>`).join('')+`<div class="ab"><button class="b" onclick="A('addl')">+ Link</button></div></div>`}
+function pv(){return `<div class="dlg"><textarea id="pr" readonly aria-label="Prompt da Tamaki">${esc(prompt())}</textarea></div><div class="ab"><button class="b" onclick="cp(document.getElementById('pr').value)">Copiar prompt</button><span>Módulos desmarcados e documentos sem “Usar” ficam de fora.</span></div>`}
+PG.ficha=cx=>{if(tab!='L'&&tab!='P'&&tab!='D'&&!S.mods[tab])tab=S.mods.length?'0':'L';
+ cx.innerHTML=(!S.v?`<div class="c aviso"><b>Ficha resumida disponível</b><p class="m">Deixei as características dela mais curtas e diretas. Quer trocar? A sua versão atual fica guardada como cópia.</p><div class="ab" style="margin-top:10px"><button class="b" onclick="RES(1)">Usar a resumida</button><button class="g" onclick="RES(0)">Manter a minha</button></div></div>`:'')
+ +`<nav class="fn">${[...S.mods.map((m,i)=>[String(i),m.t]),['D','📄 Documentos'],['L','Links'],['P','Prompt']].map(([k,n])=>`<button class="${k==tab?'on':''}" onclick="A('tab','${k}')">${esc(n)}</button>`).join('')}<button onclick="A('addm')">+ Módulo</button></nav>`
+ +(tab=='L'?lv():tab=='P'?pv():tab=='D'?dv():mv(tab))};
 const valida=o=>{if(!o||!Array.isArray(o.mods)||!Array.isArray(o.links))throw 0;return o};
-window.OF=async i=>{try{S=valida(JSON.parse(await i.files[0].text()));tab='0';save();render();st('ficha restaurada')}catch(e){st('arquivo inválido')}};
 window.E=el=>{const d=el.dataset;if(d.w=='f')S.mods[d.m].f[d.f][d.p]=el.value;else if(d.w=='t')S.mods[d.m].t=el.value;else if(d.w=='i')S.mods[d.m].inc=el.checked?1:0;else if(d.w=='l')S.links[d.l][d.p]=el.value;save()};
-window.A=(a,i,j)=>{if(a=='tab')tab=i;else if(a=='addf')S.mods[i].f.push(['Novo campo','']);else if(a=='delf')S.mods[i].f.splice(j,1);else if(a=='addm'){S.mods.push({id:'m'+Date.now(),t:'Novo módulo',inc:1,f:[['Campo','']]});tab=String(S.mods.length-1)}else if(a=='delm'){if(!j.dataset.s){j.dataset.s=1;j.textContent='Toque de novo para excluir';return}S.mods.splice(i,1);tab='0'}else if(a=='addl')S.links.push({n:'Novo link',u:'',d:''});else if(a=='dell')S.links.splice(i,1);if(a!='tab')save();render()};
+window.A=(a,i,j)=>{if(a=='tab')tab=i;else if(a=='addf')S.mods[i].f.push(['Novo campo','']);else if(a=='delf')S.mods[i].f.splice(j,1);else if(a=='addm'){S.mods.push({id:'m'+Date.now(),t:'Novo módulo',inc:1,f:[['Campo','']]});tab=String(S.mods.length-1)}else if(a=='delm'){if(!j.dataset.s){j.dataset.s=1;j.textContent='Toque de novo para excluir';return}S.mods.splice(i,1);tab='0'}else if(a=='addl')S.links.push({n:'Novo link',u:'',d:''});else if(a=='dell')S.links.splice(i,1);if(a!='tab'){garante();save()}desenhaPgs()};
+window.cp=cp;
 // quem já tinha uma ficha salva escolhe se troca pela resumida (a antiga vira cópia)
-window.RES=troca=>{if(troca){try{localStorage.setItem('tamaki:c:antes-da-resumida',JSON.stringify({nome:'Ficha antes da versão resumida',em:new Date().toISOString(),json:JSON.stringify(S)}))}catch(e){}S=JSON.parse(JSON.stringify(D))}else S.v=2;$('#av').innerHTML='';tab='0';save();render()};
-(async()=>{try{const t=localStorage.getItem('tamaki');if(t)S=valida(JSON.parse(t))}catch(e){S=JSON.parse(JSON.stringify(D))}
-  if(!localStorage.getItem('tamaki'))save();
-  else if(!S.v)$('#av').innerHTML=`<div class="c aviso"><b>Ficha resumida disponível</b><p class="m">Deixei as características dela mais curtas e diretas. Quer trocar? A sua versão atual fica guardada como cópia.</p><div class="ab" style="margin-top:10px"><button class="b" onclick="RES(1)">Usar a resumida</button><button class="g" onclick="RES(0)">Manter a minha</button></div></div>`;
-  try{await listar()}catch(e){}render();st(S.v?'salvo neste aparelho':'pronto')})();
+window.RES=troca=>{if(troca){try{localStorage.setItem('tamaki:c:antes-da-resumida',JSON.stringify({nome:'Ficha antes da versão resumida',em:new Date().toISOString(),json:JSON.stringify(S)}))}catch(e){}const p=S.perfil;S=clone(D);if(p)S.perfil=p}else S.v=2;garante();tab='0';save();desenhaPgs()};
+
+/* ---------- começo ---------- */
+(async()=>{try{const t=localStorage.getItem('tamaki');if(t)S=valida(JSON.parse(t))}catch(e){S=clone(D)}
+ garante();save();
+ try{await listar()}catch(e){}
+ try{msgs=((await ZAP.todas())||[]).sort((a,b)=>a.t-b.t)}catch(e){toast('Não consegui abrir a conversa guardada')}
+ try{vozes=((await VOZES.todas())||[]).filter(v=>v&&v.id)}catch(e){}
+ desenhaModos();topo();desenhaChat()})();
 if('serviceWorker'in navigator&&location.protocol.indexOf('http')==0)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script></body></html>
