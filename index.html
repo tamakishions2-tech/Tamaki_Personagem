@@ -1,4 +1,5 @@
 <!doctype html>
+<!-- Tamaki · versão 9 · com Estúdio de imagem -->
 <html lang="pt-BR"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0d0b1e"><meta name="color-scheme" content="dark"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png"><title>Tamaki Shion</title>
@@ -225,9 +226,9 @@ const CARTAO={id:'cartao',t:'Cartão de personalidade',inc:1,f:[
  ['Bordões','“Bicha, nem te conto”, “gente”, “tintim por tintim”, “nem relógio trabalha de graça”, “não vou dar palco pra maluco”.','bord'],
  ['Nunca faz','Palavrão sem suavizar; inventar fatos sobre gente real; discurso de ódio; fingir que não é uma personagem feita com IA.','nunca'],
  ['Exemplos de fala','Bicha, nem te conto: dobrei a página 42 DE NOVO e a galinha me olhou com julgamento.\nMiga, eu não vou dar palco pra maluco… mas eu vou comentar, né? Sou humana. Quer dizer, elfa.\nGente, dormi às 4 por causa de UMA batalha de ginásio. Valeu cada olheira.','ex'],
- ['Aparência (para imagens, em inglês)','Tamaki Shion, a 25-year-old elf woman, warm brown skin, curly blue-violet hair with one orange streak, teal eyes, pointed elf ears, small fangs','apar'],
- ['Estilo das imagens (em inglês)','warm cartoon illustration, flat colors, clean lineart, cozy soft lighting','estilo'],
- ['Palavra-gatilho do LoRA','','lora'],
+ ['Aparência (para imagens, em inglês)','elf woman, dark skin, voluminous curly dark navy-blue hair with a large orange front lock over one side of the face, teal eyes, winged eyeliner, small beauty marks under the ear','apar'],
+ ['Estilo das imagens (em inglês)','flat color, thick outlines, clean lineart, warm lighting','estilo'],
+ ['Palavra-gatilho do LoRA','tmkshion','lora'],
  ['Marca de IA nos posts','#personagemIA #feitocomIA','marca'],
  ['Voz ligada','','voz']]};
 const PERFIL={nome:'Tamaki Shion',recado:'lendo, jogando ou fofocando',sobre:'Elfa, 25 anos, leitora de livros que não existem. Personagem criada com IA.',foto:'',vozId:'',
@@ -265,7 +266,8 @@ return o+'\n## Links e ferramentas\n'+S.links.map(l=>'- '+l.n+(l.u?' ('+l.u+')':
 // garante que fichas antigas ganhem o cartão e o perfil sem perder nada
 function garante(){if(!S.perfil)S.perfil=clone(PERFIL);for(const k in PERFIL)if(S.perfil[k]===undefined)S.perfil[k]=clone(PERFIL[k]);
  let c=S.mods.find(m=>m.id=='cartao');if(!c){c=clone(CARTAO);const i=S.mods.findIndex(m=>m.id=='pers');S.mods.splice(i<0?S.mods.length:i+1,0,c)}
- CARTAO.f.forEach(x=>{if(!c.f.some(y=>y[2]==x[2]))c.f.push(clone(x))})}
+ CARTAO.f.forEach(x=>{if(!c.f.some(y=>y[2]==x[2]))c.f.push(clone(x))})
+ const ANT={apar:'Tamaki Shion, a 25-year-old elf woman, warm brown skin, curly blue-violet hair with one orange streak, teal eyes, pointed elf ears, small fangs',estilo:'warm cartoon illustration, flat colors, clean lineart, cozy soft lighting',lora:''};c.f.forEach(y=>{if(y[2] in ANT&&String(y[1]).trim()==ANT[y[2]]){const n=CARTAO.f.find(z=>z[2]==y[2]);if(n)y[1]=n[1]}})}
 const cartao=()=>S.mods.find(m=>m.id=='cartao');
 const cv=k=>{const x=(cartao()||CARTAO).f.find(y=>y[2]==k);return x?String(x[1]||'').trim():''};
 const cset=(k,v)=>{const x=cartao().f.find(y=>y[2]==k);if(x){x[1]=v;save()}};
@@ -364,7 +366,7 @@ $('#fAnexo').onchange=async e=>{for(const f of [...e.target.files].slice(0,4-pen
 const hora=t=>new Date(t).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
 const br=s=>esc(s).replace(/\n/g,'<br>');
 function textoPost(d){return (d.legenda||'')+'\n\n'+[...(d.hashtags||[]),cv('marca')].join(' ').replace(/\s+/g,' ').trim()}
-function promptImg(d){return [cv('lora'),cv('apar'),d.prompt_imagem,cv('estilo')].map(x=>String(x||'').trim().replace(/[.,\s]+$/,'')).filter(Boolean).join(', ')}
+function promptImg(d){return [cv('apar'),d.prompt_imagem,cv('estilo')].map(x=>String(x||'').trim().replace(/[.,\s]+$/,'')).filter(Boolean).join(', ')}
 function polaroid(m,mini){const d=m.dados;return `<div class="pola"><div class="foto">${m.img?`<img src="${urlDe(m.img)}" alt="Foto do post">`:esc(d.cena||d.ideia)}</div>${mini?'':`<p class="leg">${br(d.legenda)}</p><p class="tags">${esc([...(d.hashtags||[]),cv('marca')].join(' '))}</p>`}</div>`}
 function bolha(m){const de=m.de;let h='';
  if(m.tipo=='erro')return `<div class="msg ela erro" data-id="${m.id}"><span class="cap">Não consegui responder</span><p>${esc(m.texto)}</p><div class="acoes"><button class="bt p" data-a="refaz" data-id="${m.id}">↻ Tentar de novo</button></div></div>`;
@@ -575,7 +577,7 @@ async function kEstado(){try{K.estado=await kApi('/estado');K.selo=['bom','ligad
 
 const qual='masterpiece, high score, great score, absurdres';
 function promptFinal(){const base=(EST.prompt||'').trim();if(!EST.juntar)return base;
- const g=cv('lora');return ['1girl',g,'solo',g?'':cv('apar'),base,cv('estilo'),qual].map(x=>String(x||'').trim().replace(/[.,\s]+$/,'')).filter(Boolean).join(', ')}
+ const g=EST.lora?cv('lora'):'';return ['1girl',g,'solo',g?'':cv('apar'),base,cv('estilo'),qual].map(x=>String(x||'').trim().replace(/[.,\s]+$/,'')).filter(Boolean).join(', ')}
 function abreEstudio(postId){const m=msgs.find(x=>x.id==postId);if(m&&m.dados){alvoPost=m.id;EST.prompt=m.dados.prompt_imagem||'';cenaPost=m.dados.cena||m.dados.ideia||'';salvaEst()}
  if(pilha[pilha.length-1]!='imagem')abrePg('imagem');else desenhaPgs()}
 function barra(){const b=$('#eBar'),t=$('#eTxt'),p=$('#eProg');if(p)p.classList.remove('hide');if(b)b.style.width=Math.round(progresso.v*100)+'%';if(t)t.textContent=progresso.t}
@@ -592,7 +594,7 @@ PG.imagem=cx=>{const ls=(K.estado&&K.estado.loras)||[],post=msgs.find(x=>x.id==a
   ${post&&cenaPost?`<p class="m">Em português: ${esc(cenaPost)}</p>`:''}
   <div class="ab"><label><input type="checkbox" id="eJu" ${EST.juntar?'checked':''}> Juntar a Tamaki, o estilo e a qualidade</label></div>
   <div class="final" id="eFin">${esc(promptFinal())}</div>
-  ${!cv('lora')?'<p class="m">Sem palavra-gatilho no Cartão, vai a aparência escrita. Quando o LoRA estiver pronto, ponha <b>tmkshion</b> no Cartão.</p>':''}
+  ${!EST.lora?'<p class="m">Sem LoRA escolhido, vai a aparência escrita do Cartão no lugar da palavra-gatilho.</p>':''}
   <label class="lbl">Formato</label><div class="chips" id="eFo">${Object.entries(FORMATOS).map(([k,f])=>`<button class="chip2 ${k==EST.formato?'on':''}" data-f="${k}">${f.n}</button>`).join('')}</div>
   <label class="lbl">Quantas imagens</label><div class="chips" id="eQt">${[1,2,3,4].map(n=>`<button class="chip2 ${n==EST.qtd?'on':''}" data-q="${n}">${n}</button>`).join('')}</div>
   <label class="lbl" for="eLo">Estilo treinado (LoRA)</label><select id="eLo"><option value="">Nenhum (modelo puro)</option>${ls.map(l=>`<option ${l==EST.lora?'selected':''}>${esc(l)}</option>`).join('')}</select>
@@ -615,7 +617,7 @@ PG.imagem=cx=>{const ls=(K.estado&&K.estado.loras)||[],post=msgs.find(x=>x.id==a
  cx.querySelector('#eJu').onchange=e=>{EST.juntar=e.target.checked;salvaEst();fin()};
  cx.querySelector('#eFo').onclick=e=>{const b=e.target.closest('[data-f]');if(b){EST.formato=b.dataset.f;salvaEst();desenhaPgs()}};
  cx.querySelector('#eQt').onclick=e=>{const b=e.target.closest('[data-q]');if(b){EST.qtd=+b.dataset.q;salvaEst();desenhaPgs()}};
- cx.querySelector('#eLo').onchange=e=>{EST.lora=e.target.value;salvaEst()};
+ cx.querySelector('#eLo').onchange=e=>{EST.lora=e.target.value;salvaEst();desenhaPgs()};
  cx.querySelector('#eFz').oninput=e=>{EST.forca=+e.target.value;cx.querySelector('#eFzV').textContent=EST.forca;salvaEst()};
  cx.querySelector('#ePa').onchange=e=>{EST.passos=Math.max(10,Math.min(60,+e.target.value||28));salvaEst()};
  cx.querySelector('#eCf').onchange=e=>{EST.cfg=Math.max(1,Math.min(12,+e.target.value||5));salvaEst()};
