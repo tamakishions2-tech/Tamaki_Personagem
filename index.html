@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Tamaki · versão 12 · peça a foto em português, lugares dela, caprichar -->
+<!-- Tamaki · versão 13 · 🧠 Saber: ensine cultura e personagens para ela -->
 <html lang="pt-BR"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0d0b1e"><meta name="color-scheme" content="dark"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png"><title>Tamaki Shion</title>
@@ -119,8 +119,8 @@ footer.bar{background:var(--pn);border-top:1px solid var(--ln);padding:8px 10px 
 .mini .pola .foto{padding:6px;font-size:11px}
 .lbl{display:block;font-weight:800;font-size:14px;color:var(--mu);margin:12px 0 4px}
 .lbl small{font-weight:400}
-.pg :where(input:not([type=checkbox]):not([type=radio]),textarea,select),#foto :where(input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select),.sh :where(textarea,input:not([type=checkbox]):not([type=radio])){background:var(--bg);border:1px solid var(--ln);border-radius:8px;padding:9px;width:100%}
-.pg :where(textarea),#foto :where(textarea),.sh :where(textarea){field-sizing:content;min-height:46px;resize:vertical}
+.pg :where(input:not([type=checkbox]):not([type=radio]),textarea,select),#foto :where(input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select),#saber :where(input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select),.sh :where(textarea,input:not([type=checkbox]):not([type=radio])){background:var(--bg);border:1px solid var(--ln);border-radius:8px;padding:9px;width:100%}
+.pg :where(textarea),#foto :where(textarea),#saber :where(textarea),.sh :where(textarea){field-sizing:content;min-height:46px;resize:vertical}
 option{background:#171431}
 .ab{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:14px;color:var(--mu);margin-top:10px}
 .ab input[type=checkbox]{width:auto}
@@ -168,7 +168,10 @@ nav.fn button.on{background:var(--ac);border-color:var(--ac);color:#1b1230}
 .abas button.on{color:var(--tx);border-bottom-color:var(--ac)}
 #kDot{width:9px;height:9px;border-radius:50%;background:var(--er);display:inline-block}
 #kDot.bom{background:#6fe39a}#kDot.vai{background:var(--ac)}
-#foto{flex:1;overflow-y:auto;padding:0 12px 30px}
+#foto,#saber{flex:1;overflow-y:auto;padding:0 12px 30px}
+.ficha{display:grid;gap:4px}.ficha h4{margin:0;font-size:16px}.ficha .uni{font-size:12px;color:var(--mu)}
+.selo2{display:inline-block;font-size:12px;font-weight:800;border-radius:20px;padding:2px 9px;margin:4px 6px 0 0}.selo2.sim{background:rgba(111,227,154,.15);color:#6fe39a}.selo2.nao{background:rgba(255,122,138,.15);color:#ff8a8a}
+.refs{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.refs img{width:56px;height:56px;object-fit:cover;border-radius:8px}
 .in2{max-width:760px;margin:0 auto}
 .aviso2{border-radius:12px;padding:12px 14px;margin:12px 0;border:1px solid var(--ln);background:var(--pn)}
 .aviso2 p{margin:6px 0 0;font-size:14px;color:var(--mu)}
@@ -233,9 +236,10 @@ input[type=range]{width:100%;accent-color:var(--te)}
     <button class="quem" id="abrePerfil" aria-label="Ver o perfil da Tamaki"><div class="av" id="avTop"></div><div style="min-width:0"><b id="nomeTop">Tamaki Shion</b><small id="recTop"></small></div></button>
     <button class="ic" id="menuTop" aria-label="Mais opções">⋮</button>
   </header>
-  <nav class="abas" id="abas" role="tablist" aria-label="Abas da Tamaki"><button class="on" data-aba="conversa" role="tab" aria-selected="true">💬 Conversa</button><button data-aba="foto" role="tab" aria-selected="false">📸 Gerar foto <i id="kDot" class="mal" aria-hidden="true"></i></button></nav>
+  <nav class="abas" id="abas" role="tablist" aria-label="Abas da Tamaki"><button class="on" data-aba="conversa" role="tab" aria-selected="true">💬 Conversa</button><button data-aba="foto" role="tab" aria-selected="false">📸 Gerar foto <i id="kDot" class="mal" aria-hidden="true"></i></button><button data-aba="saber" role="tab" aria-selected="false">🧠 Saber</button></nav>
   <div id="lista" aria-live="polite"></div>
   <section id="foto" class="hide" aria-label="Gerar foto"></section>
+  <section id="saber" class="hide" aria-label="O que ela sabe"></section>
   <footer class="bar">
     <div class="modos" id="modos" role="tablist" aria-label="O que a mensagem vai ser"></div>
     <div class="pend" id="pend"></div>
@@ -314,7 +318,7 @@ const R=docs.filter(d=>d.usar&&pareceTexto(d.texto));if(R.length)o+='\n## Docume
 return o+'\n## Links e ferramentas\n'+S.links.map(l=>'- '+l.n+(l.u?' ('+l.u+')':'')+(l.d?': '+l.d:'')).join('\n')}
 
 // garante que fichas antigas ganhem o cartão e o perfil sem perder nada
-function garante(){if(!Array.isArray(S.lugares))S.lugares=clone(LUGARES);if(!S.perfil)S.perfil=clone(PERFIL);for(const k in PERFIL)if(S.perfil[k]===undefined)S.perfil[k]=clone(PERFIL[k]);
+function garante(){if(!Array.isArray(S.saber))S.saber=[];if(!Array.isArray(S.lugares))S.lugares=clone(LUGARES);if(!S.perfil)S.perfil=clone(PERFIL);for(const k in PERFIL)if(S.perfil[k]===undefined)S.perfil[k]=clone(PERFIL[k]);
  let c=S.mods.find(m=>m.id=='cartao');if(!c){c=clone(CARTAO);const i=S.mods.findIndex(m=>m.id=='pers');S.mods.splice(i<0?S.mods.length:i+1,0,c)}
  CARTAO.f.forEach(x=>{if(!c.f.some(y=>y[2]==x[2]))c.f.push(clone(x))})
  const ANT={apar:'Tamaki Shion, a 25-year-old elf woman, warm brown skin, curly blue-violet hair with one orange streak, teal eyes, pointed elf ears, small fangs',estilo:'warm cartoon illustration, flat colors, clean lineart, cozy soft lighting',lora:''};c.f.forEach(y=>{if(y[2] in ANT&&String(y[1]).trim()==ANT[y[2]]){const n=CARTAO.f.find(z=>z[2]==y[2]);if(n)y[1]=n[1]}})}
@@ -386,9 +390,10 @@ function manual(sis,junta){return new Promise((ok,no)=>{
 /* ---------- o que ela sabe antes de responder ---------- */
 const DIAS=['domingo','segunda','terça','quarta','quinta','sexta','sábado'];
 function quemE(){const p=S.perfil;let o='Você É '+p.nome+'. Fale sempre em primeira pessoa, como ela, em português brasileiro. Você é uma personagem criada com IA e não esconde isso se perguntarem.\n\n## Cartão de personalidade\n';
- cartao().f.filter(x=>x[1]&&!['apar','estilo','lora','marca','voz'].includes(x[2])).forEach(x=>o+='- '+x[0]+': '+x[1]+'\n');
+ cartao().f.filter(x=>x[1]&&!['apar','estilo','lora','tracos','marca','voz'].includes(x[2])).forEach(x=>o+='- '+x[0]+': '+x[1]+'\n');
  if(p.sobre)o+='- Bio do perfil: '+p.sobre+'\n';
  S.mods.filter(m=>m.inc&&!['cartao','voz','visual'].includes(m.id)).forEach(m=>{o+='\n## '+m.t+'\n'+m.f.filter(x=>x[1]).map(x=>'- '+x[0]+': '+x[1]).join('\n')+'\n'});
+ const SB=(S.saber||[]).filter(f=>f.usar!==false);if(SB.length){let r2=3500;o+='\n## Coisas que você conhece e curte (o Tama te ensinou)\n';for(const f of SB){const l='- '+f.nome+(f.universo&&f.universo!=f.nome?' ('+f.universo+')':'')+': '+(f.resumo||'')+'\n';if(r2-l.length<0)break;r2-=l.length;o+=l}}
  let resta=5000;const R=docs.filter(d=>d.usar&&pareceTexto(d.texto));if(R.length){o+='\n## Trechos de referência sobre você\n';for(const d of R){if(resta<200)break;const t=d.texto.slice(0,resta);resta-=t.length;o+='### '+d.nome+'\n'+t+'\n'}}
  return o}
 function contexto(){const n=new Date(),h=n.getHours();let o='\n## Agora\nHoje é '+DIAS[n.getDay()]+', '+n.toLocaleDateString('pt-BR')+', '+n.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})+' ('+(h<6?'madrugada':h<12?'manhã':h<18?'tarde':'noite')+').\n';
@@ -634,8 +639,8 @@ async function kApi(rota,corpo){if(!K.url)throw new Error('o Kaggle não está l
  const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.erro||('erro '+r.status));return j}
 async function kEstado(){const antes=K.estado&&K.estado.treino&&K.estado.treino.estado;
  try{K.estado=await kApi('/estado');K.vivo=true;K.msg='';
-  const ls=K.estado.loras||[];if(EST.lora&&!ls.includes(EST.lora))EST.lora='';if(!EST.lora&&ls.length)EST.lora=ls[ls.length-1];salvaEst();
-  const tr=K.estado.treino||{};if(antes&&antes!='pronto'&&tr.estado=='pronto'&&tr.nome){EST.lora=tr.nome;salvaEst();toast('Treino pronto: '+tr.nome)}}
+  const ls=K.estado.loras||[],dela=ls.filter(l=>!(S.saber||[]).some(f=>f.gatilho&&l.startsWith(f.gatilho+'_')));if(EST.lora&&!ls.includes(EST.lora))EST.lora='';if(!EST.lora&&dela.length)EST.lora=dela[dela.length-1];salvaEst();
+  const tr=K.estado.treino||{};if(antes&&antes!='pronto'&&tr.estado=='pronto'&&tr.nome){if(dela.includes(tr.nome))EST.lora=tr.nome;salvaEst();toast('Treino pronto: '+tr.nome);if(aba=='saber')desenhaSaber()}}
  catch(e){K.vivo=false;K.msg=e.message}}
 // vigia: com a aba aberta ou com treino rodando, confere o Kaggle de tempos em tempos
 setInterval(async()=>{const tr=K.estado&&K.estado.treino,treinando=tr&&['preparando','treinando','salvando'].includes(tr.estado);
@@ -646,8 +651,8 @@ setInterval(async()=>{const tr=K.estado&&K.estado.treino,treinando=tr&&['prepara
 const qual='masterpiece, high score, great score, absurdres';
 // v12: ordem do Animagine (1girl, personagem, o resto, qualidade no fim). O pedido vem logo depois da Tamaki.
 const limpa=x=>String(x||'').trim().replace(/^[.,\s]+|[.,\s]+$/g,'');
-function montaPrompt(base,lugar,comLora){const g=comLora?cv('lora'):'',L=(S.lugares||[]).find(l=>l.id==lugar);
- return ['1girl',g,'solo',base,L&&L.t,g?cv('tracos'):cv('apar'),cv('estilo'),qual].map(limpa).filter(Boolean).join(', ')}
+function montaPrompt(base,lugar,comLora){const g=comLora?cv('lora'):'',L=(S.lugares||[]).find(l=>l.id==lugar),mais=/\b(1boy|[2-9]boys|[2-9]girls|multiple (girls|boys)|no humans)\b/i.test(base||''),varias=/\b([2-9]girls|multiple girls|1girl)\b/i.test(base||'');
+ return [varias?'':'1girl',g,mais?'':'solo',base,L&&L.t,g?cv('tracos'):cv('apar'),cv('estilo'),qual].map(limpa).filter(Boolean).join(', ')}
 function promptFinal(){const base=(EST.prompt||'').trim();if(!EST.juntar)return base;return montaPrompt(base,EST.lugar,!!EST.lora)}
 const rascunhos=()=>msgs.filter(m=>m.de=='ela'&&m.tipo=='post'&&m.dados&&m.dados.status!='postado').reverse();
 function ligaPost(id){const m=msgs.find(x=>x.id==id);if(m&&m.dados){alvoPost=m.id;EST.prompt=m.dados.prompt_imagem||'';EST.lugar=m.dados.lugar||'';EST.conv=[];salvaEst()}}
@@ -656,8 +661,8 @@ function abreEstudio(postId){if(postId)ligaPost(postId);sub='gerar';irAba('foto'
 /* ---------- abas da Tamaki ---------- */
 function irAba(a){aba=a;pilha=[];desenhaPgs();fecha();
  document.querySelectorAll('.abas [data-aba]').forEach(b=>{b.classList.toggle('on',b.dataset.aba==a);b.setAttribute('aria-selected',b.dataset.aba==a)});
- $('#lista').classList.toggle('hide',a!='conversa');$('.bar').classList.toggle('hide',a!='conversa');$('#foto').classList.toggle('hide',a!='foto');
- if(a=='foto'){desenhaFoto();if(!K.url&&!K.procurando)kProcurar()}else desenhaChat()}
+ $('#lista').classList.toggle('hide',a!='conversa');$('.bar').classList.toggle('hide',a!='conversa');$('#foto').classList.toggle('hide',a!='foto');$('#saber').classList.toggle('hide',a!='saber');
+ if(a=='foto'){desenhaFoto();if(!K.url&&!K.procurando)kProcurar()}else if(a=='saber'){desenhaSaber();if(!K.url&&!K.procurando)kProcurar()}else desenhaChat()}
 $('#abas').onclick=e=>{const b=e.target.closest('[data-aba]');if(b)irAba(b.dataset.aba)};
 function atualizaVivo(){const d=$('#kDot');if(d)d.className=K.vivo?'bom':K.procurando?'vai':'mal';
  const b=$('#kAviso');if(b&&aba=='foto'){const novo=avisoHTML();if(b.outerHTML!=novo)desenhaFoto()}}
@@ -775,8 +780,13 @@ function ligaFoto(cx){const q=s=>cx.querySelector(s),fin=()=>{const e=q('#eFin')
 async function marcaTreino(id,v){if(id.startsWith('p_')){const m=msgs.find(x=>x.id==id.slice(2));if(m){m.treinoImg=v;await guarda(m)}}else{const i=historico.find(x=>x.id==id);if(i){i.treino=v;await IMGS.por(i)}}}
 
 /* ---------- pedir em português: o Kaggle (ou o Cérebro) transforma em etiquetas ---------- */
+const semAc=t=>String(t||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+function loraDe(f){const ls=(K.estado&&K.estado.loras)||[];return f.gatilho?ls.filter(l=>l.startsWith(f.gatilho+'_')).slice(-1)[0]||'':''}
+function citados(texto){const t=' '+semAc(texto)+' ';return (S.saber||[]).filter(f=>f.tipo!='universo'&&[f.nome,...(f.apelidos||[])].some(n=>n&&n.length>2&&t.includes(semAc(n))))}
+const conhecidoDe=f=>({nome:f.nome,universo:f.universo||'',tags:f.tags||'',gatilho:loraDe(f)?f.gatilho:''});
 async function entenderPedido(texto){const anterior=EST.conv.length?EST.prompt:'';
- if(K.estado&&K.estado.versao>=2&&K.estado.texto!='erro')return await kApi('/pedido',{texto,anterior,lugares:S.lugares,gosto:EST.gosto,exemplos:EST.favs});
+ const conhecidos=citados(texto+' '+EST.conv.map(c=>c.eu).join(' ')).map(conhecidoDe);
+ if(K.estado&&K.estado.versao>=2&&K.estado.texto!='erro')return await kApi('/pedido',{texto,anterior,lugares:S.lugares,gosto:EST.gosto,exemplos:EST.favs,conhecidos});
  if(CER.modo=='manual')throw new Error('o Kaggle está com a célula antiga e o Cérebro está em “copiar e colar”. Troque a célula do Kaggle pela nova.');
  const t=await pensar('Você é diretor de arte de um gerador de anime (Animagine XL 4.0) que só entende etiquetas do Danbooru. Transforme o pedido em etiquetas em inglês da CENA (pose/ação, expressão, roupa, objetos, enquadramento, ângulo, luz, hora). Não descreva rosto, cabelo, pele nem orelhas. Se vierem ETIQUETAS ANTERIORES e o pedido for uma mudança, mude só o que ele pediu. Lugares possíveis (use o id em "lugar" se servir): '+S.lugares.map(l=>l.id+' = '+l.n).join(', ')+'. Gosto do Tama (respeite sempre): '+EST.gosto+'. Responda SÓ JSON: {"tags":"...","lugar":"...","formato":"","evitar":"","resposta":"uma frase curta em português dizendo o que vai desenhar"}',[{role:'user',text:(anterior?'ETIQUETAS ANTERIORES: '+anterior+'\n':'')+'PEDIDO: '+texto,imgs:[]}],true);
  return pegaJSON(t)}
@@ -785,16 +795,95 @@ async function pedirFoto(){const texto=(EST.pedido||'').trim();if(!texto)return 
  try{const d=await entenderPedido(texto);
   EST.prompt=String(d.tags||'').trim();if(S.lugares.some(l=>l.id==d.lugar))EST.lugar=d.lugar;else if(d.lugar==='')EST.lugar=EST.conv.length?EST.lugar:'';
   if(FORMATOS[d.formato])EST.formato=d.formato;EST.evitar=String(d.evitar||'');
-  EST.conv=EST.conv.concat([{eu:texto,ela:d.resposta||'Entendi.'}]).slice(-8);EST.ultimoPedido=texto;EST.pedido='';salvaEst();
+  EST.conv=EST.conv.concat([{eu:texto,ela:(d.resposta||'Entendi.')+((d.avisos||[]).length?' ⚠️ '+d.avisos.join(' · '):'')}]).slice(-8);EST.ultimoPedido=texto;EST.pedido='';salvaEst();
   pensandoImg=false;desenhaFoto();if(K.vivo&&EST.prompt)gerarImgs()}
  catch(e){pensandoImg=false;desenhaFoto();toast('Não entendi o pedido: '+e.message)}}
+
+/* =========================================================
+   🧠 Saber: o que a Tamaki conhece (universos, personagens, lugares, coisas).
+   Entra na personalidade dela (conversa e posts) e no 📸 Gerar foto (etiquetas e LoRA de cada personagem).
+   ========================================================= */
+const REFS=banco('tamaki-saber','refs');let refs=[],aprendido=null,aprendendo=false,filtroUni='',abertaF='';
+const slugG=t=>semAc(t).replace(/[^a-z0-9]/g,'').slice(0,18)||'personagem';
+function salvaFicha(f){const L=S.saber,i=L.findIndex(x=>semAc(x.nome)==semAc(f.nome)&&semAc(x.universo)==semAc(f.universo));
+ if(i<0)L.push(Object.assign({id:uid(),usar:true,apelidos:[],tags:'',resumo:'',gatilho:''},f));else L[i]=Object.assign(L[i],Object.fromEntries(Object.entries(f).filter(([k,v])=>v!==''&&v!=null&&!(Array.isArray(v)&&!v.length))));save()}
+function desenhaSaber(){const cx=$('#saber');if(!cx)return;const rol=cx.scrollTop,L=S.saber||[],unis=[...new Set(L.map(f=>f.universo).filter(Boolean))],ver=L.filter(f=>!filtroUni||f.universo==filtroUni),v3=K.vivo&&K.estado&&K.estado.versao>=3;
+ cx.innerHTML=`<div class="in2">
+ <div class="c"><b>🧠 O que ela sabe</b> <small class="m">${L.length} ${L.length==1?'coisa':'coisas'}</small><p class="m">Ensine universos, personagens, lugares e o que mais quiser. Ela passa a conversar sobre isso, pode decidir posts com isso, e o 📸 Gerar foto usa a aparência de cada personagem.</p></div>
+ <div class="c"><b>＋ Ensinar algo novo</b>
+  <label class="lbl" for="sUrl">Link <small>(wiki, fandom, página de personagem)</small></label><input id="sUrl" type="url" placeholder="https://ordemparanormal.fandom.com/wiki/…" autocomplete="off">
+  <label class="lbl" for="sTx">ou cole o texto <small>(para páginas protegidas: copie o texto e cole aqui)</small></label><textarea id="sTx" placeholder="Cole aqui o que você quer que ela saiba…"></textarea>
+  <div class="ab"><button class="b" id="sGo" ${aprendendo?'disabled':''}>${aprendendo?'Lendo e aprendendo…':'🧠 Aprender'}</button><button class="g" id="sNova">✍️ Escrever uma ficha à mão</button></div>
+  ${!v3?`<p class="m">${K.vivo?'O Kaggle está com a célula antiga: link só funciona com a nova. Texto colado usa o Cérebro dela.':'Com o Kaggle de imagem ligado ela lê links e confere no Danbooru. Desligado, só texto colado (pelo Cérebro dela).'}</p>`:''}</div>
+ ${aprendido?`<div class="c"><b>Ela entendeu isto${aprendido.universo?' sobre '+esc(aprendido.universo):''}</b><p class="m">${esc(aprendido.resumo||'')}</p>
+  ${(aprendido.fichas||[]).map((f,i)=>`<label class="opc on"><input type="checkbox" data-ap="${i}" checked><span><b>${esc(f.nome)}</b> <small class="m">${esc(f.tipo||'')}</small><br><span class="m">${esc(f.resumo||'')}</span><br>${f.danbooru&&f.danbooru.imagens>=30?`<span class="selo2 sim">o desenho conhece · ${f.danbooru.imagens} imagens</span>`:f.tipo=='personagem'||f.tipo=='criatura'?'<span class="selo2 nao">o desenho não conhece: dá para treinar com imagens</span>':''}</span></label>`).join('')}
+  <div class="ab"><button class="b" id="sGuarda">💾 Guardar as marcadas</button><button class="g" id="sDesc">Descartar</button></div></div>`:''}
+ ${unis.length>1?`<div class="chips"><button class="chip2 ${!filtroUni?'on':''}" data-u="">Tudo</button>${unis.map(u=>`<button class="chip2 ${u==filtroUni?'on':''}" data-u="${esc(u)}">${esc(u)}</button>`).join('')}</div>`:''}
+ ${ver.slice().reverse().map(f=>fichaHTML(f)).join('')||'<p class="m">Nada ainda. Mande um link ou cole um texto acima.</p>'}</div>`;
+ cx.scrollTop=rol;ligaSaber(cx)}
+function fichaHTML(f){const rs=refs.filter(r=>r.ficha==f.id),lo=loraDe(f),db=f.danbooru||{},aberta=abertaF==f.id,pessoa=f.tipo=='personagem'||f.tipo=='criatura';
+ return `<div class="c ficha" data-f="${f.id}"><div style="display:flex;gap:8px;align-items:flex-start"><div style="flex:1"><h4>${esc(f.nome)}</h4><span class="uni">${esc([f.tipo,f.universo].filter(Boolean).join(' · '))}</span></div>
+  <label class="m" style="font-size:13px"><input type="checkbox" data-usar ${f.usar!==false?'checked':''}> ela sabe</label></div>
+  <p style="margin:4px 0 0">${esc(f.resumo||'')}</p>
+  ${pessoa?`<div>${lo?`<span class="selo2 sim">treinado · ${esc(lo)}</span>`:db.imagens>=30?`<span class="selo2 sim">o desenho conhece · ${db.imagens} imagens</span>`:`<span class="selo2 nao">o desenho não conhece${rs.length?'':' · mande imagens para treinar'}</span>`}</div>`:''}
+  ${aberta?`<label class="lbl">Nome</label><input data-k="nome" value="${esc(f.nome)}"><label class="lbl">Universo</label><input data-k="universo" value="${esc(f.universo||'')}">
+   <label class="lbl">Tipo</label><select data-k="tipo">${['personagem','criatura','lugar','coisa','universo'].map(t=>`<option ${t==f.tipo?'selected':''}>${t}</option>`).join('')}</select>
+   <label class="lbl">Outros nomes <small>(separados por vírgula; é assim que ela reconhece no seu pedido)</small></label><input data-k="apelidos" value="${esc((f.apelidos||[]).join(', '))}">
+   <label class="lbl">O que ela sabe</label><textarea data-k="resumo">${esc(f.resumo||'')}</textarea>
+   ${pessoa||f.tipo=='lugar'?`<label class="lbl">Aparência em etiquetas <small>(inglês: 1boy, cabelo, olhos, roupa…)</small></label><textarea data-k="tags">${esc(f.tags||'')}</textarea>`:''}
+   ${pessoa?`<label class="lbl">Imagens de referência <small>(${rs.length}; para treinar, 10 a 20 do mesmo personagem)</small></label><div class="refs">${rs.map(r=>`<img src="${urlDe(r.blob)}" alt="">`).join('')}</div>
+    <div class="ab"><label class="g">＋ Imagens<input type="file" data-ref accept="image/*" multiple hidden></label>${rs.length?'<button class="g" data-a="limparefs">Tirar as imagens</button>':''}<button class="b" data-a="treina" ${!K.vivo||rs.length<5||enviandoTreino?'disabled':''}>${enviandoTreino||'🎓 Treinar '+esc(f.nome.split(' ')[0])}</button></div>
+    <p class="m">${!K.vivo?'Ligue o Kaggle de imagem para treinar.':rs.length<5?'Mande pelo menos 5 imagens (o ideal é 15).':'Leva uns 20–40 min. Depois é só citar o nome no pedido da foto.'} Palavra do treino: <code>${esc(f.gatilho||slugG(f.nome))}</code></p>`:''}
+   <div class="ab"><button class="g" data-a="fecha">✓ Pronto</button><button class="g" data-a="apaga">🗑 Apagar</button></div>`:`<div class="ab"><button class="g" data-a="abre">✏️ Ver e editar${pessoa?' · imagens':''}</button></div>`}</div>`}
+function ligaSaber(cx){
+ cx.onclick=async e=>{const t=e.target;
+  if(t.id=='sGo')return aprenderAgora(cx);
+  if(t.id=='sNova'){const f={id:uid(),nome:'Nova ficha',tipo:'personagem',universo:filtroUni||'',apelidos:[],resumo:'',tags:'',usar:true,gatilho:''};S.saber.push(f);save();abertaF=f.id;return desenhaSaber()}
+  if(t.id=='sDesc'){aprendido=null;return desenhaSaber()}
+  if(t.id=='sGuarda'){const a=aprendido,marc=[...cx.querySelectorAll('[data-ap]')].filter(x=>x.checked).map(x=>a.fichas[+x.dataset.ap]);
+   if(a.universo&&a.resumo)salvaFicha({nome:a.universo,tipo:'universo',universo:a.universo,resumo:a.resumo});
+   for(const f of marc)salvaFicha({nome:f.nome,tipo:f.tipo||'personagem',universo:a.universo||'',apelidos:f.apelidos||[],resumo:f.resumo||'',tags:f.tags||'',danbooru:f.danbooru||null});
+   toast(marc.length+' guardadas: ela já sabe');aprendido=null;return desenhaSaber()}
+  const u=t.closest('[data-u]');if(u){filtroUni=u.dataset.u;return desenhaSaber()}
+  const b=t.closest('[data-a]'),fc=t.closest('[data-f]');if(!b||!fc)return;const f=S.saber.find(x=>x.id==fc.dataset.f);if(!f)return;const a=b.dataset.a;
+  if(a=='abre'){abertaF=f.id;return desenhaSaber()}if(a=='fecha'){abertaF='';return desenhaSaber()}
+  if(a=='apaga'){if(!b.dataset.s){b.dataset.s=1;b.textContent='Toque de novo para apagar';return}S.saber=S.saber.filter(x=>x!==f);for(const r of refs.filter(r=>r.ficha==f.id))await REFS.tirar(r.id);refs=refs.filter(r=>r.ficha!=f.id);save();return desenhaSaber()}
+  if(a=='limparefs'){for(const r of refs.filter(r=>r.ficha==f.id))await REFS.tirar(r.id);refs=refs.filter(r=>r.ficha!=f.id);return desenhaSaber()}
+  if(a=='treina')return treinarFicha(f)};
+ cx.oninput=e=>{const fc=e.target.closest('[data-f]'),k=e.target.dataset.k;if(!fc||!k)return;const f=S.saber.find(x=>x.id==fc.dataset.f);if(!f)return;
+  f[k]=k=='apelidos'?e.target.value.split(',').map(x=>x.trim()).filter(Boolean):e.target.value;save()};
+ cx.onchange=async e=>{const fc=e.target.closest('[data-f]');if(!fc)return;const f=S.saber.find(x=>x.id==fc.dataset.f);if(!f)return;
+  if(e.target.hasAttribute('data-usar')){f.usar=e.target.checked;save();toast(f.usar?'Ela sabe de novo':'Ela esqueceu (dá para religar)')}
+  if(e.target.dataset.k=='tipo')desenhaSaber();
+  if(e.target.hasAttribute('data-ref')){let n=0;for(const fl of e.target.files){try{const r={id:uid(),ficha:f.id,blob:await reduz(fl,1280,.92)};await REFS.por(r);refs.push(r);n++}catch(x){}}toast(n+' imagens de referência');desenhaSaber()}}}
+async function aprenderAgora(cx){const url=cx.querySelector('#sUrl').value.trim(),texto=cx.querySelector('#sTx').value.trim();if(!url&&!texto)return toast('Mande um link ou cole um texto');
+ aprendendo=true;desenhaSaber();
+ try{if(K.vivo&&K.estado&&K.estado.versao>=3)aprendido=await kApi('/aprender',{url,texto});
+  else{if(!texto)throw new Error('para ler link, ligue o Kaggle de imagem com a célula nova; ou cole o texto da página');
+   if(CER.modo=='manual')throw new Error('o Cérebro dela está em “copiar e colar”; ligue o Kaggle de imagem ou escolha o Gemini em Cérebro');
+   aprendido=pegaJSON(await pensar('Você lê um texto e tira fichas de conhecimento para a personagem Tamaki. Responda SÓ JSON: {"universo":"nome do universo ou assunto","resumo":"3 a 5 frases em português","fichas":[{"nome":"","tipo":"personagem|lugar|criatura|coisa","apelidos":[],"resumo":"2 a 3 frases em português","tags":"etiquetas do Danbooru em inglês da APARÊNCIA (1boy/1girl, cabelo, olhos, roupa), vazio se o texto não diz"}]}. Até 10 fichas. Não invente aparência.',[{role:'user',text:texto.slice(0,12000),imgs:[]}],true))}
+  if(!aprendido||!Array.isArray(aprendido.fichas))throw new Error('não consegui tirar nada desse texto')}
+ catch(er){aprendido=null;toast('Não aprendi: '+er.message)}
+ aprendendo=false;desenhaSaber()}
+async function treinarFicha(f){if(enviandoTreino)return;const rs=refs.filter(r=>r.ficha==f.id);if(rs.length<5)return toast('Mande pelo menos 5 imagens');
+ if(!f.gatilho){f.gatilho=slugG(f.nome);save()}
+ const cont=(f.tags.match(/\b(1boy|1girl|no humans)\b/i)||[(f.tipo=='criatura'?'no humans':'1boy')])[0],leg=[f.gatilho,cont,'solo'].join(', ');
+ try{for(let i=0;i<rs.length;i+=4){enviandoTreino='Mandando '+Math.min(i+4,rs.length)+' de '+rs.length+'…';desenhaSaber();
+   const lote=[];for(const r of rs.slice(i,i+4)){const j=await reduz(r.blob,1280,.92);lote.push({nome:f.gatilho+'_'+String(i+lote.length+1).padStart(3,'0'),jpg:(await b64(j)).split(',')[1],legenda:leg})}
+   await kApi('/treino/imagens',{limpar:i==0,imagens:lote})}
+  enviandoTreino='Começando…';desenhaSaber();
+  await kApi('/treinar',{epocas:8,originais:false,gatilho:f.gatilho});
+  if(!f.tags.includes(f.gatilho))f.tags=[f.gatilho,f.tags].filter(Boolean).join(', ');save();
+  await kEstado();toast('Treino de '+f.nome+' começou. Acompanhe em 📸 Gerar foto › 🎓 Treinar.')}
+ catch(er){toast('Não consegui começar: '+er.message)}
+ enviandoTreino='';desenhaSaber()}
 
 /* ---------- gerar ---------- */
 function barra(){const b=$('#eBar'),t=$('#eTxt'),p=$('#eProg');if(p)p.classList.remove('hide');if(b)b.style.width=Math.round(progresso.v*100)+'%';if(t)t.textContent=progresso.t}
 async function gerarImgs(){if(gerando)return;const pr=promptFinal();if(!pr)return toast('Escreva o que desenhar');
  // o LoRA aprendeu com fundos lisos; se a cena não pede fundo liso, empurra para longe dele
  const fundoLiso=EST.lora&&!/simple background|grey background|white background/i.test(pr)?', simple background, grey background, white background, plain background':'';
- const f=FORMATOS[EST.formato],pedido={prompt:pr,negativo:EST.negativo+fundoLiso+(EST.evitar?', '+EST.evitar:''),largura:f.w,altura:f.h,passos:EST.passos,cfg:EST.cfg,semente:EST.semente===''?-1:+EST.semente,quantidade:EST.qtd,lora:EST.lora,forca:EST.forca,caprichar:!!EST.caprichar};
+ const f=FORMATOS[EST.formato],pedido={prompt:pr,negativo:EST.negativo+fundoLiso+(EST.evitar?', '+EST.evitar:''),largura:f.w,altura:f.h,passos:EST.passos,cfg:EST.cfg,semente:EST.semente===''?-1:+EST.semente,quantidade:EST.qtd,lora:EST.lora,forca:EST.forca,caprichar:!!EST.caprichar,extras:(S.saber||[]).filter(x=>x.gatilho&&loraDe(x)&&new RegExp('\\b'+x.gatilho+'\\b','i').test(pr)).map(x=>({lora:loraDe(x),forca:x.forca||.8}))};
  gerando=true;progresso={v:0,t:'Mandando o pedido…'};ultimas=[];desenhaFoto();
  try{const {id}=await kApi('/gerar',pedido);const ini=Date.now();
   while(true){await new Promise(r=>setTimeout(r,1500));const t=await kApi('/tarefa/'+encodeURIComponent(id));
@@ -909,6 +998,7 @@ window.RES=troca=>{if(troca){try{localStorage.setItem('tamaki:c:antes-da-resumid
  try{msgs=((await ZAP.todas())||[]).sort((a,b)=>a.t-b.t)}catch(e){toast('Não consegui abrir a conversa guardada')}
  try{vozes=((await VOZES.todas())||[]).filter(v=>v&&v.id)}catch(e){}
  try{historico=((await IMGS.todas())||[]).sort((a,b)=>a.t-b.t)}catch(e){}
+ try{refs=(await REFS.todas())||[]}catch(e){}
  desenhaModos();topo();desenhaChat()})();
 if('serviceWorker'in navigator&&location.protocol.indexOf('http')==0)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script></body></html>
