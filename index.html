@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Tamaki · versão 15 · foto "safe" por padrão, treino com legendas automáticas -->
+<!-- Tamaki · versão 16 · volta para a mesma aba se o Android recarregar · foto "safe" por padrão, treino com legendas automáticas -->
 <html lang="pt-BR"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0d0b1e"><meta name="color-scheme" content="dark"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png"><title>Tamaki Shion</title>
@@ -664,7 +664,7 @@ function ligaPost(id){const m=msgs.find(x=>x.id==id);if(m&&m.dados){alvoPost=m.i
 function abreEstudio(postId){if(postId)ligaPost(postId);sub='gerar';irAba('foto')}
 
 /* ---------- abas da Tamaki ---------- */
-function irAba(a){aba=a;pilha=[];desenhaPgs();fecha();
+function irAba(a){aba=a;try{sessionStorage.setItem('tamaki-aba',a)}catch(e){}pilha=[];desenhaPgs();fecha();
  document.querySelectorAll('.abas [data-aba]').forEach(b=>{b.classList.toggle('on',b.dataset.aba==a);b.setAttribute('aria-selected',b.dataset.aba==a)});
  $('#lista').classList.toggle('hide',a!='conversa');$('.bar').classList.toggle('hide',a!='conversa');$('#foto').classList.toggle('hide',a!='foto');$('#saber').classList.toggle('hide',a!='saber');
  if(a=='foto'){desenhaFoto();if(!K.url&&!K.procurando)kProcurar()}else if(a=='saber'){desenhaSaber();if(!K.url&&!K.procurando)kProcurar()}else desenhaChat()}
@@ -752,7 +752,7 @@ function fGaleria(){return `<div class="c"><b>Galeria</b> <small class="m">${his
 
 function ligaFoto(cx){const q=s=>cx.querySelector(s),fin=()=>{const e=q('#eFin');if(e)e.textContent=promptFinal()};
  cx.onclick=async e=>{const t=e.target;
-  const s=t.closest('[data-sub]');if(s){sub=s.dataset.sub;return desenhaFoto()}
+  const s=t.closest('[data-sub]');if(s){sub=s.dataset.sub;try{sessionStorage.setItem('tamaki-sub',sub)}catch(e){}return desenhaFoto()}
   const k=t.closest('[data-k]');if(k){const a=k.dataset.k;
    if(a=='busca'){K.url=null;return kProcurar()}
    if(a=='limpa'){for(const c of candidatos())if(c.treino)await marcaTreino(c.id,false);return desenhaFoto()}
@@ -1016,7 +1016,9 @@ window.RES=troca=>{if(troca){try{localStorage.setItem('tamaki:c:antes-da-resumid
  try{vozes=((await VOZES.todas())||[]).filter(v=>v&&v.id)}catch(e){}
  try{historico=((await IMGS.todas())||[]).sort((a,b)=>a.t-b.t)}catch(e){}
  try{refs=(await REFS.todas())||[]}catch(e){}
- desenhaModos();topo();desenhaChat()})();
+ desenhaModos();topo();desenhaChat();
+ // se o Android recarregou a página (ex.: ao abrir a galeria), volta para onde você estava
+ try{const a=sessionStorage.getItem('tamaki-aba');if(a&&a!='conversa'){sub=sessionStorage.getItem('tamaki-sub')||sub;irAba(a)}}catch(e){}})();
 if('serviceWorker'in navigator&&location.protocol.indexOf('http')==0)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script></body></html>
 <script>
