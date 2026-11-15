@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Tamaki · versão 9 · com Estúdio de imagem -->
+<!-- Tamaki · versão 10 · Estúdio de imagem com lugares, etiquetas e contador -->
 <html lang="pt-BR"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0d0b1e"><meta name="color-scheme" content="dark"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png"><title>Tamaki Shion</title>
@@ -169,6 +169,8 @@ nav.fn button.on{background:var(--ac);border-color:var(--ac);color:#1b1230}
 .chip2{background:transparent;border:1px solid var(--ln);border-radius:20px;padding:7px 13px;font-weight:700;font-size:14px;color:var(--mu)}
 .chip2.on{background:var(--te);border-color:var(--te);color:#0d1f1e}
 .final{font:13px/1.5 ui-monospace,Menlo,monospace;color:var(--mu);background:var(--bg);border-radius:8px;padding:8px;margin-top:6px;word-break:break-word}
+.final s{color:#ff8a73;text-decoration:line-through}
+.conta{font-size:13px;margin:4px 0 0}.conta.mal{color:#ff8a73}
 .gerar{width:100%;padding:14px;font-size:17px;border-radius:12px;margin-top:4px}
 .gerar:disabled{opacity:.55}
 .barra{height:8px;border-radius:4px;background:var(--bg);overflow:hidden;margin-top:10px}
@@ -229,8 +231,19 @@ const CARTAO={id:'cartao',t:'Cartão de personalidade',inc:1,f:[
  ['Aparência (para imagens, em inglês)','elf woman, dark skin, voluminous curly dark navy-blue hair with a large orange front lock over one side of the face, teal eyes, winged eyeliner, small beauty marks under the ear','apar'],
  ['Estilo das imagens (em inglês)','flat color, thick outlines, clean lineart, warm lighting','estilo'],
  ['Palavra-gatilho do LoRA','tmkshion','lora'],
+ ['Traços em etiquetas (vão junto com o LoRA)','dark skin, curly hair, dark blue hair, orange streak, teal eyes, pointy ears','tracos'],
  ['Marca de IA nos posts','#personagemIA #feitocomIA','marca'],
  ['Voz ligada','','voz']]};
+// Lugares da Tamaki: etiquetas testadas de cada cenário. Assim o mesmo lugar sai sempre parecido.
+const LUGARES=[
+ {id:'sala',e:'🛋️',n:'Sala do apê',t:'indoors, living room, small apartment, open kitchen, bookshelf, potted plant, armchair, window, warm lighting, cozy'},
+ {id:'quarto',e:'🛏️',n:'Quarto',t:'indoors, bedroom, bed, bookshelf, fairy lights, window, night, cozy'},
+ {id:'cozinha',e:'🍳',n:'Cozinha',t:'indoors, kitchen, kitchen counter, mug, potted plant, morning, sunlight'},
+ {id:'varanda',e:'🌇',n:'Varanda',t:'outdoors, balcony, railing, potted plant, cityscape, sunset, orange sky'},
+ {id:'mesa',e:'🎮',n:'Mesa de jogar',t:'indoors, desk, monitor, handheld game console, headphones, desk lamp, night'},
+ {id:'livraria',e:'📚',n:'Livraria',t:'indoors, bookstore, bookshelf, book stack, wooden floor, warm lighting'},
+ {id:'fazenda',e:'🌾',n:'Fazenda da família',t:'outdoors, farm, wooden fence, field, barn, blue sky, day'},
+ {id:'vila',e:'🏮',n:'Vilarejo',t:'outdoors, fantasy village, street, paper lantern, east asian architecture, european architecture, day'}];
 const PERFIL={nome:'Tamaki Shion',recado:'lendo, jogando ou fofocando',sobre:'Elfa, 25 anos, leitora de livros que não existem. Personagem criada com IA.',foto:'',vozId:'',
  redes:[{e:'📸',n:'Instagram',u:''},{e:'▶️',n:'YouTube',u:''},{e:'🎵',n:'TikTok',u:''}]};
 const D={v:2,mods:[
@@ -264,7 +277,7 @@ const R=docs.filter(d=>d.usar&&pareceTexto(d.texto));if(R.length)o+='\n## Docume
 return o+'\n## Links e ferramentas\n'+S.links.map(l=>'- '+l.n+(l.u?' ('+l.u+')':'')+(l.d?': '+l.d:'')).join('\n')}
 
 // garante que fichas antigas ganhem o cartão e o perfil sem perder nada
-function garante(){if(!S.perfil)S.perfil=clone(PERFIL);for(const k in PERFIL)if(S.perfil[k]===undefined)S.perfil[k]=clone(PERFIL[k]);
+function garante(){if(!Array.isArray(S.lugares))S.lugares=clone(LUGARES);if(!S.perfil)S.perfil=clone(PERFIL);for(const k in PERFIL)if(S.perfil[k]===undefined)S.perfil[k]=clone(PERFIL[k]);
  let c=S.mods.find(m=>m.id=='cartao');if(!c){c=clone(CARTAO);const i=S.mods.findIndex(m=>m.id=='pers');S.mods.splice(i<0?S.mods.length:i+1,0,c)}
  CARTAO.f.forEach(x=>{if(!c.f.some(y=>y[2]==x[2]))c.f.push(clone(x))})
  const ANT={apar:'Tamaki Shion, a 25-year-old elf woman, warm brown skin, curly blue-violet hair with one orange streak, teal eyes, pointed elf ears, small fangs',estilo:'warm cartoon illustration, flat colors, clean lineart, cozy soft lighting',lora:''};c.f.forEach(y=>{if(y[2] in ANT&&String(y[1]).trim()==ANT[y[2]]){const n=CARTAO.f.find(z=>z[2]==y[2]);if(n)y[1]=n[1]}})}
@@ -366,7 +379,7 @@ $('#fAnexo').onchange=async e=>{for(const f of [...e.target.files].slice(0,4-pen
 const hora=t=>new Date(t).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
 const br=s=>esc(s).replace(/\n/g,'<br>');
 function textoPost(d){return (d.legenda||'')+'\n\n'+[...(d.hashtags||[]),cv('marca')].join(' ').replace(/\s+/g,' ').trim()}
-function promptImg(d){return [cv('apar'),d.prompt_imagem,cv('estilo')].map(x=>String(x||'').trim().replace(/[.,\s]+$/,'')).filter(Boolean).join(', ')}
+function promptImg(d){return montaPrompt(d.prompt_imagem,d.lugar,true)}
 function polaroid(m,mini){const d=m.dados;return `<div class="pola"><div class="foto">${m.img?`<img src="${urlDe(m.img)}" alt="Foto do post">`:esc(d.cena||d.ideia)}</div>${mini?'':`<p class="leg">${br(d.legenda)}</p><p class="tags">${esc([...(d.hashtags||[]),cv('marca')].join(' '))}</p>`}</div>`}
 function bolha(m){const de=m.de;let h='';
  if(m.tipo=='erro')return `<div class="msg ela erro" data-id="${m.id}"><span class="cap">Não consegui responder</span><p>${esc(m.texto)}</p><div class="acoes"><button class="bt p" data-a="refaz" data-id="${m.id}">↻ Tentar de novo</button></div></div>`;
@@ -404,8 +417,8 @@ async function responder(pedido,refazId){ocupada=true;topo();desenhaChat();
    r={tipo:'conversa',texto:t}}
   else if(pedido.tipo=='noticia'){const t=await pensar(sis,[{role:'user',text:'Te mandei '+(pedido.imgs.length?(pedido.imgs.length==1?'o print':'os prints')+' de uma notícia':'uma notícia')+'.'+(pedido.texto?' Recado: '+pedido.texto:'')+'\nLeia e responda SÓ com um JSON, sem nada antes ou depois:\n{"titulo":"título curto","resumo":"2 a 4 frases só com os fatos, sem opinião","comentario":"o que você acha, do seu jeito, 1 a 3 frases","conferir":"deixe vazio se parecer confiável; se parecer boato, notícia antiga ou sem fonte, diga o que conferir"}\nSe não der para ler, diga isso no resumo.',imgs:pedido.imgs}],true);
    const d=pegaJSON(t);r={tipo:'noticia',dados:{titulo:String(d.titulo||''),resumo:String(d.resumo||''),comentario:String(d.comentario||''),conferir:String(d.conferir||'')}}}
-  else if(pedido.tipo=='post'){const t=await pensar(sis,[{role:'user',text:'Hora de decidir o seu próximo post no Instagram. Quem escolhe é você: o que está fazendo, onde e com que roupa, combinando com o seu dia a dia, o seu diário, as notícias que leu e o dia de hoje. Não repita os posts recentes.'+(pedido.texto?'\nDica do Tama: '+pedido.texto:'')+'\nResponda SÓ com um JSON, sem nada antes ou depois:\n{"ideia":"o que você decidiu postar, 1 frase na sua voz","cena":"a foto descrita em português, 1 ou 2 frases","prompt_imagem":"in English: only the scene — action, place, outfit of the day, props, pose, camera framing, lighting. Do NOT describe her face, hair, skin or ears (the app adds that)","legenda":"a legenda na sua voz, 1 a 5 linhas, pode ter emoji","hashtags":["de 5 a 10 hashtags, sem as de IA"]}',imgs:[]}],true);
-   const d=pegaJSON(t);r={tipo:'post',dados:{ideia:String(d.ideia||''),cena:String(d.cena||''),prompt_imagem:String(d.prompt_imagem||''),legenda:String(d.legenda||''),hashtags:(Array.isArray(d.hashtags)?d.hashtags:String(d.hashtags||'').split(/\s+/)).map(x=>String(x).trim()).filter(Boolean).map(x=>x[0]=='#'?x:'#'+x),status:'rascunho'}}}
+  else if(pedido.tipo=='post'){const t=await pensar(sis,[{role:'user',text:'Hora de decidir o seu próximo post no Instagram. Quem escolhe é você: o que está fazendo, onde e com que roupa, combinando com o seu dia a dia, o seu diário, as notícias que leu e o dia de hoje. Não repita os posts recentes.'+(pedido.texto?'\nDica do Tama: '+pedido.texto:'')+'\nResponda SÓ com um JSON, sem nada antes ou depois:\n{"ideia":"o que você decidiu postar, 1 frase na sua voz","cena":"a foto descrita em português, 1 ou 2 frases","lugar":"o id de um destes lugares, ou vazio se for outro lugar: '+S.lugares.map(l=>l.id+' ('+l.n+')').join(', ')+'","prompt_imagem":"Danbooru tags in English separated by commas, 8 to 20 tags, in this order: action/pose, outfit of the day, props, camera framing (upper body, cowboy shot, full body, from above…), lighting, extra place details if the place is not in the list. Use real Danbooru tags (sitting, holding book, hoodie, cargo pants, smile, looking at viewer). No sentences. Do NOT describe her face, hair, skin or ears (the app adds that)","legenda":"a legenda na sua voz, 1 a 5 linhas, pode ter emoji","hashtags":["de 5 a 10 hashtags, sem as de IA"]}',imgs:[]}],true);
+   const d=pegaJSON(t);r={tipo:'post',dados:{ideia:String(d.ideia||''),cena:String(d.cena||''),lugar:S.lugares.some(l=>l.id==d.lugar)?d.lugar:'',prompt_imagem:String(d.prompt_imagem||''),legenda:String(d.legenda||''),hashtags:(Array.isArray(d.hashtags)?d.hashtags:String(d.hashtags||'').split(/\s+/)).map(x=>String(x).trim()).filter(Boolean).map(x=>x[0]=='#'?x:'#'+x),status:'rascunho'}}}
   if(refazId){try{await ZAP.tirar(refazId)}catch(e){}msgs=msgs.filter(x=>x.id!=refazId)}
   await guarda(Object.assign({id:uid(),t:Date.now(),de:'ela',pedido:pedido.id,estrela:0},r))}
  catch(e){if(e.message!='cancelado'){const er={id:refazId||uid(),t:Date.now(),de:'ela',tipo:'erro',texto:e.message,pedido:pedido.id};msgs=msgs.filter(x=>x.id!=er.id);msgs.push(er)}else if(refazId){}}
@@ -456,9 +469,9 @@ function desenhaPgs(){const ant=$('#pgs .pg:last-of-type'),rol=ant&&!anim?{id:an
  pilha.forEach(id=>{const sec=$(`#pgs [data-pg="${id}"]`);sec.querySelector('[data-volta]').onclick=voltaPg;PG[id](sec.querySelector('.cx'))});
  document.querySelectorAll('#pgs .pg').forEach((s,i,a)=>s.style.display=i==a.length-1?'block':'none');const nv=$('#pgs .pg:last-of-type');if(rol&&nv&&nv.dataset.pg==rol.id)nv.scrollTop=rol.y;anim=false;topo()}
 function desenhaPerfilSeAberto(){if(pilha.length&&pilha[pilha.length-1]=='perfil')desenhaPgs()}
-const TIT={perfil:'',cartao:'Cartão de personalidade',ficha:'Ficha completa',cerebro:'Cérebro',treino:'Material de treino',copia:'Cópia de segurança',diario:'Diário dela',redes:'Redes dela',imagem:'Estúdio de imagem'};
+const TIT={lugares:'Lugares dela',perfil:'',cartao:'Cartão de personalidade',ficha:'Ficha completa',cerebro:'Cérebro',treino:'Material de treino',copia:'Cópia de segurança',diario:'Diário dela',redes:'Redes dela',imagem:'Estúdio de imagem'};
 $('#abrePerfil').onclick=()=>abrePg('perfil');
-$('#menuTop').onclick=()=>{const sh=folha(`<button class="linha" data-g="perfil"><span class="e">👤</span>Perfil dela</button><button class="linha" data-g="diario"><span class="e">📓</span>Diário dela</button><button class="linha" data-g="cartao"><span class="e">📇</span>Cartão de personalidade</button><button class="linha" data-g="imagem"><span class="e">🎨</span>Estúdio de imagem</button><button class="linha" data-g="cerebro"><span class="e">🧠</span><span>Cérebro<small>${nomeCer()}</small></span></button><button class="linha" data-g="ficha"><span class="e">📚</span>Ficha completa</button>`);
+$('#menuTop').onclick=()=>{const sh=folha(`<button class="linha" data-g="perfil"><span class="e">👤</span>Perfil dela</button><button class="linha" data-g="diario"><span class="e">📓</span>Diário dela</button><button class="linha" data-g="cartao"><span class="e">📇</span>Cartão de personalidade</button><button class="linha" data-g="imagem"><span class="e">🎨</span>Estúdio de imagem</button><button class="linha" data-g="lugares"><span class="e">🏠</span>Lugares dela</button><button class="linha" data-g="cerebro"><span class="e">🧠</span><span>Cérebro<small>${nomeCer()}</small></span></button><button class="linha" data-g="ficha"><span class="e">📚</span>Ficha completa</button>`);
  sh.onclick=e=>{const b=e.target.closest('[data-g]');if(b){fecha();abrePg(b.dataset.g)}}};
 
 const PG={};
@@ -485,6 +498,14 @@ PG.perfil=cx=>{const p=S.perfil,posts=msgs.filter(m=>m.de=='ela'&&m.tipo=='post'
   const ab=e.target.closest('[data-abre]');if(ab){const m=msgs.find(x=>x.id==ab.dataset.id);if(m){const sh=folha(`${polaroid(m)}<div class="acoes"><button class="bt" id="gC">📋 Copiar legenda</button><button class="bt" id="gF">🖼 Trocar imagem</button></div>`);sh.querySelector('#gC').onclick=()=>cp(textoPost(m.dados));sh.querySelector('#gF').onclick=()=>{fecha();alvoFoto=m.id;$('#fImg').click()}}}}};
 $('#fFoto').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;try{S.perfil.foto=await b64(await reduz(f,320,.85));save();topo();desenhaPgs();toast('Foto trocada')}catch(x){toast('Não consegui abrir a imagem')}};
 
+PG.lugares=cx=>{const L=S.lugares;cx.innerHTML=`<p class="m">Cada lugar tem as etiquetas (em inglês) que descrevem o cenário. Quando sair um cenário bom, copie as etiquetas dele para cá: assim o lugar sai sempre parecido. A Tamaki escolhe um destes quando decide um post.</p>
+ ${L.map((l,i)=>`<div class="c"><div class="duo"><div><label class="lbl" for="lE${i}">Emoji</label><input id="lE${i}" data-i="${i}" data-k="e" value="${esc(l.e)}"></div><div><label class="lbl" for="lN${i}">Nome</label><input id="lN${i}" data-i="${i}" data-k="n" value="${esc(l.n)}"></div></div>
+  <label class="lbl" for="lT${i}">Etiquetas</label><textarea id="lT${i}" data-i="${i}" data-k="t">${esc(l.t)}</textarea><div class="ab"><button class="g" data-x="${i}">🗑 Tirar</button></div></div>`).join('')}
+ <div class="ab"><button class="b" id="lAdd">＋ Novo lugar</button><button class="g" id="lPad">Voltar aos lugares padrão</button></div>`;
+ cx.oninput=e=>{const x=e.target.dataset;if(x.k){L[+x.i][x.k]=e.target.value;save()}};
+ cx.onclick=e=>{const t=e.target.closest('[data-x]');if(t){L.splice(+t.dataset.x,1);save();desenhaPgs()}
+  if(e.target.id=='lAdd'){L.push({id:'l'+uid(),e:'📍',n:'Lugar novo',t:'indoors, '});save();desenhaPgs()}
+  if(e.target.id=='lPad'){S.lugares=clone(LUGARES);save();desenhaPgs();toast('Lugares padrão de volta')}}};
 PG.redes=cx=>{const p=S.perfil;cx.innerHTML=`<p class="m">Os links aparecem no perfil para você abrir rápido na hora de postar.</p>${p.redes.map((r,i)=>`<div class="c"><div style="display:grid;grid-template-columns:64px 1fr auto;gap:8px"><input data-r="${i}" data-k="e" value="${esc(r.e)}" aria-label="Ícone" style="text-align:center"><input data-r="${i}" data-k="n" value="${esc(r.n)}" aria-label="Nome da rede"><button class="x" data-tira="${i}" aria-label="Tirar ${esc(r.n)}">×</button></div><input data-r="${i}" data-k="u" value="${esc(r.u)}" placeholder="https://" inputmode="url" aria-label="Link" style="margin-top:8px"></div>`).join('')}<div class="ab"><button class="b" id="rMais">+ Rede</button></div>`;
  cx.oninput=e=>{const t=e.target;if(t.dataset.r!=null){p.redes[t.dataset.r][t.dataset.k]=t.value;save()}};
  cx.onclick=e=>{const t=e.target.closest('[data-tira]');if(t){p.redes.splice(+t.dataset.tira,1);save();desenhaPgs()}if(e.target.id=='rMais'){p.redes.push({e:'🔗',n:'Nova rede',u:''});save();desenhaPgs()}}};
@@ -549,10 +570,13 @@ function zip(arqs){const enc=new TextEncoder(),partes=[],cent=[];let off=0;for(c
    ========================================================= */
 const IMGS=banco('tamaki-imagens','imgs');
 let historico=[],ultimas=[],alvoPost=null,cenaPost='',gerando=false,progresso={v:0,t:''};
-const NEG='lowres, bad anatomy, bad hands, text, error, missing finger, extra digits, fewer digits, cropped, worst quality, low quality, low score, bad score, average score, signature, watermark, username, blurry, logo';
+const NEG0='lowres, bad anatomy, bad hands, text, error, missing finger, extra digits, fewer digits, cropped, worst quality, low quality, low score, bad score, average score, signature, watermark, username, blurry, logo';
+// v10: o LoRA foi treinado com folhas de personagem; isto evita que ela volte a sair em folha, fundo branco ou várias vistas
+const NEG=NEG0+', simple background, white background, character sheet, reference sheet, multiple views, turnaround, split screen, comic, border, frame';
 const FORMATOS={retrato:{n:'Post 4:5',w:896,h:1152},quadrado:{n:'Quadrado',w:1024,h:1024},story:{n:'Story 9:16',w:768,h:1344},paisagem:{n:'Deitada',w:1216,h:832}};
-let EST=Object.assign({codigo:'',formato:'retrato',qtd:2,lora:'',forca:.9,passos:28,cfg:5,semente:'',negativo:NEG,juntar:true,prompt:''},(()=>{try{return JSON.parse(localStorage.getItem('tamaki-img-cfg'))||{}}catch(e){return{}}})());
+let EST=Object.assign({v:10,codigo:'',formato:'retrato',qtd:2,lora:'',forca:.75,passos:28,cfg:5,semente:'',negativo:NEG,juntar:true,prompt:'',lugar:''},(()=>{try{return JSON.parse(localStorage.getItem('tamaki-img-cfg'))||{}}catch(e){return{}}})());
 const salvaEst=()=>{try{localStorage.setItem('tamaki-img-cfg',JSON.stringify(EST))}catch(e){}};
+if(!(EST.v>=10)){if(EST.negativo==NEG0)EST.negativo=NEG;if(EST.forca==.9)EST.forca=.75;EST.v=10;salvaEst()}
 const K={url:null,estado:null,procurando:false,msg:'',selo:['','desligado']};
 
 async function responde(u){const c=new AbortController(),t=setTimeout(()=>c.abort(),7000);try{return(await fetch(u+'/',{signal:c.signal})).ok}catch(e){return false}finally{clearTimeout(t)}}
@@ -576,9 +600,17 @@ async function kEstado(){try{K.estado=await kApi('/estado');K.selo=['bom','ligad
  catch(e){K.selo=['mal','Kaggle desligado'];K.msg=e.message}}
 
 const qual='masterpiece, high score, great score, absurdres';
-function promptFinal(){const base=(EST.prompt||'').trim();if(!EST.juntar)return base;
- const g=EST.lora?cv('lora'):'';return ['1girl',g,'solo',g?'':cv('apar'),base,cv('estilo'),qual].map(x=>String(x||'').trim().replace(/[.,\s]+$/,'')).filter(Boolean).join(', ')}
-function abreEstudio(postId){const m=msgs.find(x=>x.id==postId);if(m&&m.dados){alvoPost=m.id;EST.prompt=m.dados.prompt_imagem||'';cenaPost=m.dados.cena||m.dados.ideia||'';salvaEst()}
+// v10: o que você pede vem logo no começo (o gerador dá mais peso ao começo e pode ignorar o que passa de ~75 pedaços).
+// Ordem: gatilho do LoRA, 1girl, o pedido, o lugar, os traços dela, o estilo e a qualidade.
+const limpa=x=>String(x||'').trim().replace(/^[.,\s]+|[.,\s]+$/g,'');
+function montaPrompt(base,lugar,comLora){const g=comLora?cv('lora'):'',L=(S.lugares||[]).find(l=>l.id==lugar);
+ return [g,'1girl, solo',base,L&&L.t,g?cv('tracos'):cv('apar'),cv('estilo'),qual].map(limpa).filter(Boolean).join(', ')}
+function promptFinal(){const base=(EST.prompt||'').trim();if(!EST.juntar)return base;return montaPrompt(base,EST.lugar,!!EST.lora)}
+// conta mais ou menos como o CLIP: cada vírgula e cada palavra curta = 1; palavra comprida = 2 ou mais
+const fichas=t=>(t.match(/[,.;:!?()]/g)||[]).length+t.split(/[^A-Za-z0-9À-ÿ'-]+/).filter(Boolean).reduce((s,w)=>s+Math.max(1,Math.ceil(w.length/7)),0);
+function finalHtml(pr){let n=0,corte=-1;const partes=pr.split(/(?<=,)\s*/);const h=partes.map((x,i)=>{n+=fichas(x);if(n>75&&corte<0)corte=i;return corte>=0?`<s>${esc(x)}</s>`:esc(x)}).join(' ');
+ return {h,n,corte}}
+function abreEstudio(postId){const m=msgs.find(x=>x.id==postId);if(m&&m.dados){alvoPost=m.id;EST.prompt=m.dados.prompt_imagem||'';if(m.dados.lugar!==undefined)EST.lugar=m.dados.lugar||'';cenaPost=m.dados.cena||m.dados.ideia||'';salvaEst()}
  if(pilha[pilha.length-1]!='imagem')abrePg('imagem');else desenhaPgs()}
 function barra(){const b=$('#eBar'),t=$('#eTxt'),p=$('#eProg');if(p)p.classList.remove('hide');if(b)b.style.width=Math.round(progresso.v*100)+'%';if(t)t.textContent=progresso.t}
 function redesenhaEst(){if(pilha[pilha.length-1]=='imagem')desenhaPgs()}
@@ -589,17 +621,19 @@ PG.imagem=cx=>{const ls=(K.estado&&K.estado.loras)||[],post=msgs.find(x=>x.id==a
   <details ${EST.codigo&&K.url?'':'open'}><summary>Código de ligação</summary><input id="kCod" value="${esc(EST.codigo)}" placeholder="tamaki-img-…" autocomplete="off" spellcheck="false"><p class="m">É o mesmo que está na linha CODIGO da célula do Kaggle. Só precisa pôr uma vez.</p></details></div>
  <div class="c">${post?`<div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start"><div><span class="cap">Para o post</span><p style="margin:0">${esc(post.dados.ideia)}</p></div><button class="x" id="sPost" aria-label="Desligar do post">×</button></div>`
    :prox?`<button class="g" id="uPost">📸 Usar o próximo post</button>`:'<p class="m" style="margin:0">Sem post ligado: o que você gerar fica só no histórico.</p>'}
-  <label class="lbl" for="ePr">O que desenhar <small>(em inglês: cena, ação, roupa, lugar)</small></label>
-  <textarea id="ePr" placeholder="sitting on a balcony at sunset, holding a mug, plush chicken beside her">${esc(EST.prompt)}</textarea>
+  <label class="lbl">Lugar <small>· etiquetas prontas de cada cenário</small></label><div class="chips" id="eLu"><button class="chip2 ${!EST.lugar?'on':''}" data-l="">Outro / nenhum</button>${(S.lugares||[]).map(l=>`<button class="chip2 ${l.id==EST.lugar?'on':''}" data-l="${esc(l.id)}">${esc(l.e+' '+l.n)}</button>`).join('')}<button class="chip2" id="eLuEd">✏️ Lugares</button></div>
+  <label class="lbl" for="ePr">O que desenhar <small>(etiquetas em inglês: ação, roupa, objetos, enquadramento, luz)</small></label>
+  <textarea id="ePr" placeholder="sitting, holding book, hoodie, plush chicken, upper body, smile">${esc(EST.prompt)}</textarea>
+  <div class="ab"><button class="g" id="eTag">✨ Escrevi em português: virar etiquetas</button></div>
   ${post&&cenaPost?`<p class="m">Em português: ${esc(cenaPost)}</p>`:''}
-  <div class="ab"><label><input type="checkbox" id="eJu" ${EST.juntar?'checked':''}> Juntar a Tamaki, o estilo e a qualidade</label></div>
-  <div class="final" id="eFin">${esc(promptFinal())}</div>
-  ${!EST.lora?'<p class="m">Sem LoRA escolhido, vai a aparência escrita do Cartão no lugar da palavra-gatilho.</p>':''}
+  <div class="ab"><label><input type="checkbox" id="eJu" ${EST.juntar?'checked':''}> Juntar a Tamaki, o lugar, o estilo e a qualidade</label></div>
+  <div class="final" id="eFin">${finalHtml(promptFinal()).h}</div><p class="conta" id="eCon"></p>
+  ${!EST.lora?'<p class="m">Sem LoRA escolhido, vai a aparência escrita do Cartão no lugar da palavra-gatilho.</p>':'<p class="m">Com o LoRA, vão a palavra-gatilho e os traços curtos do Cartão (cabelo, olhos, orelhas), para ela não perder a cara.</p>'}
   <label class="lbl">Formato</label><div class="chips" id="eFo">${Object.entries(FORMATOS).map(([k,f])=>`<button class="chip2 ${k==EST.formato?'on':''}" data-f="${k}">${f.n}</button>`).join('')}</div>
   <label class="lbl">Quantas imagens</label><div class="chips" id="eQt">${[1,2,3,4].map(n=>`<button class="chip2 ${n==EST.qtd?'on':''}" data-q="${n}">${n}</button>`).join('')}</div>
   <label class="lbl" for="eLo">Estilo treinado (LoRA)</label><select id="eLo"><option value="">Nenhum (modelo puro)</option>${ls.map(l=>`<option ${l==EST.lora?'selected':''}>${esc(l)}</option>`).join('')}</select>
   ${K.url&&!ls.length?'<p class="m">O Kaggle ainda não achou nenhum LoRA treinado.</p>':''}
-  <label class="lbl" for="eFz">Força do LoRA: <span id="eFzV">${EST.forca}</span> <small>· mais alto = mais parecida, menos flexível</small></label><input type="range" id="eFz" min="0.3" max="1.3" step="0.05" value="${EST.forca}">
+  <label class="lbl" for="eFz">Força do LoRA: <span id="eFzV">${EST.forca}</span> <small>· mais alto = mais parecida, mas obedece menos ao cenário. Comece em 0,7–0,8</small></label><input type="range" id="eFz" min="0.3" max="1.3" step="0.05" value="${EST.forca}">
   <details style="margin-top:12px"><summary>Avançado</summary><div class="duo"><div><label class="lbl" for="ePa">Passos</label><input id="ePa" type="number" min="10" max="60" value="${EST.passos}"></div><div><label class="lbl" for="eCf">CFG</label><input id="eCf" type="number" min="1" max="12" step="0.5" value="${EST.cfg}"></div></div>
    <label class="lbl" for="eSe">Semente <small>(vazio = aleatória)</small></label><input id="eSe" type="number" value="${esc(EST.semente)}" placeholder="aleatória">
    <label class="lbl" for="eNe">O que evitar</label><textarea id="eNe">${esc(EST.negativo)}</textarea><div class="ab"><button class="g" id="eNeR">Voltar ao padrão</button></div></details></div>
@@ -608,7 +642,13 @@ PG.imagem=cx=>{const ls=(K.estado&&K.estado.loras)||[],post=msgs.find(x=>x.id==a
  ${!K.url?'<p class="m">Ligue o notebook no Kaggle para gerar. Enquanto isso, dá para preparar o pedido.</p>':''}
  ${ultimas.length?`<div class="sec"><h3>Acabou de sair</h3><div class="res">${ultimas.map(i=>`<button data-im="${i.id}" aria-label="Ver imagem"><img src="${urlDe(i.blob)}" alt=""></button>`).join('')}</div></div>`:''}
  <div class="sec"><h3>Histórico (${historico.length})</h3>${historico.length?`<div class="res hist">${historico.slice().reverse().map(i=>`<button data-im="${i.id}" aria-label="Ver imagem"><img src="${urlDe(i.blob)}" alt="" loading="lazy"></button>`).join('')}</div>`:'<p class="m" style="margin:0">As imagens geradas ficam guardadas aqui no aparelho.</p>'}</div>`;
- const fin=()=>{const e=cx.querySelector('#eFin');if(e)e.textContent=promptFinal()};
+ const fin=()=>{const e=cx.querySelector('#eFin'),c=cx.querySelector('#eCon');if(!e)return;const f=finalHtml(promptFinal());e.innerHTML=f.h;
+  c.textContent=f.corte>=0?`≈ ${f.n} pedaços: o que está riscado pode ser ignorado pelo gerador. Encurte o pedido ou tire etiquetas repetidas.`:`≈ ${f.n} de 75 pedaços: cabe tudo.`;c.classList.toggle('mal',f.corte>=0)};fin();
+ cx.querySelector('#eLu').onclick=e=>{if(e.target.closest('#eLuEd')){abrePg('lugares');return}const b=e.target.closest('[data-l]');if(b){EST.lugar=b.dataset.l;salvaEst();desenhaPgs()}};
+ cx.querySelector('#eTag').onclick=async e=>{const t=(EST.prompt||'').trim();if(!t)return toast('Escreva o que quer na imagem');const b=e.target;b.disabled=true;b.textContent='Transformando…';
+  try{const r=await pensar('Você converte pedidos de imagem em etiquetas do Danbooru para um gerador de anime (Illustrious/NoobAI). Responda SÓ com as etiquetas em inglês separadas por vírgula, de 6 a 20, nesta ordem: ação/pose, roupa, objetos, enquadramento, luz, detalhes do lugar. Use etiquetas reais do Danbooru. Não descreva rosto, cabelo, pele nem orelhas da personagem. Não escreva frases.',[{role:'user',text:t,imgs:[]}]);
+   EST.prompt=String(r).replace(/```[a-z]*|```/gi,'').split('\n').filter(x=>x.trim()).join(', ').replace(/\s+/g,' ').trim();salvaEst();desenhaPgs();toast('Pronto: virou etiquetas')}
+  catch(x){toast(x.message);b.disabled=false;b.textContent='✨ Escrevi em português: virar etiquetas'}};
  cx.querySelector('#kBusca').onclick=kProcurar;
  cx.querySelector('#kCod').onchange=e=>{EST.codigo=e.target.value.trim();salvaEst();K.url=null;kProcurar()};
  const up=cx.querySelector('#uPost');if(up)up.onclick=()=>abreEstudio(prox.id);
