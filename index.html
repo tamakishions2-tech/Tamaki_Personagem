@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Tamaki · versão 14 · roupa dela fixa, comparar versões do LoRA -->
+<!-- Tamaki · versão 15 · foto "safe" por padrão, treino com legendas automáticas -->
 <html lang="pt-BR"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0d0b1e"><meta name="color-scheme" content="dark"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png"><title>Tamaki Shion</title>
@@ -615,12 +615,15 @@ function zip(arqs){const enc=new TextEncoder(),partes=[],cent=[];let off=0;for(c
    ========================================================= */
 const IMGS=banco('tamaki-imagens','imgs');
 let historico=[],ultimas=[],alvoPost=null,gerando=false,progresso={v:0,t:''},sub='gerar',aba='conversa',enviandoTreino='';
-const NEG='lowres, bad anatomy, bad hands, text, error, missing finger, extra digits, fewer digits, cropped, worst quality, low quality, low score, bad score, average score, signature, watermark, username, blurry, logo';
+const NEG='nsfw, explicit, revealing clothes, bikini, swimsuit, underwear, lingerie, lowres, bad anatomy, bad hands, text, error, missing finger, extra digits, fewer digits, cropped, worst quality, low quality, low score, bad score, average score, signature, watermark, username, blurry, logo';
 const FORMATOS={retrato:{n:'Post 4:5',w:896,h:1152},quadrado:{n:'Quadrado',w:1024,h:1024},story:{n:'Story 9:16',w:768,h:1344},paisagem:{n:'Deitada',w:1216,h:832}};
 const FORCAS={leve:{n:'Leve',e:4,d:'teste rápido'},normal:{n:'Normal',e:6,d:'o recomendado'},forte:{n:'Forte',e:8,d:'para muitas imagens'}};
 let EST=Object.assign({v:12,lugar:'',pedido:'',conv:[],favs:[],gosto:'curvy, vibrant colors',caprichar:false,evitar:'',codigo:'',formato:'retrato',qtd:2,lora:'',forca:.75,passos:28,cfg:5,semente:'',negativo:NEG,juntar:true,prompt:'',treinoForca:'normal',originais:true,visto:''},(()=>{try{return JSON.parse(localStorage.getItem('tamaki-img-cfg'))||{}}catch(e){return{}}})());
 const salvaEst=()=>{try{localStorage.setItem('tamaki-img-cfg',JSON.stringify(EST))}catch(e){}};
 if(!(EST.v>=12)){if(EST.forca==.9)EST.forca=.75;EST.v=12;salvaEst()}
+// v15: o Animagine entende a etiqueta "safe"; e afasta roupa curta que ninguém pediu
+const NEG_SAFE='nsfw, explicit, revealing clothes, bikini, swimsuit, underwear, lingerie';
+if(!(EST.v>=15)){if(!EST.negativo.includes('nsfw'))EST.negativo+=', '+NEG_SAFE;EST.v=15;salvaEst()}
 const K={url:null,estado:null,procurando:false,msg:'',vivo:false,ultimo:0};
 
 /* ---------- ligação com o Kaggle ---------- */
@@ -654,7 +657,7 @@ const qual='masterpiece, high score, great score, absurdres';
 // v12: ordem do Animagine (1girl, personagem, o resto, qualidade no fim). O pedido vem logo depois da Tamaki.
 const limpa=x=>String(x||'').trim().replace(/^[.,\s]+|[.,\s]+$/g,'');
 function montaPrompt(base,lugar,comLora){const g=comLora?cv('lora'):'',L=(S.lugares||[]).find(l=>l.id==lugar),mais=/\b(1boy|[2-9]boys|[2-9]girls|multiple (girls|boys)|no humans)\b/i.test(base||''),varias=/\b([2-9]girls|multiple girls|1girl)\b/i.test(base||'');
- return [varias?'':'1girl',g,mais?'':'solo',base,L&&L.t,g?cv('tracos'):cv('apar'),cv('estilo'),qual].map(limpa).filter(Boolean).join(', ')}
+ return [varias?'':'1girl',g,mais?'':'solo',EST.safe!==false?'safe':'',base,L&&L.t,g?cv('tracos'):cv('apar'),cv('estilo'),qual].map(limpa).filter(Boolean).join(', ')}
 function promptFinal(){const base=(EST.prompt||'').trim();if(!EST.juntar)return base;return montaPrompt(base,EST.lugar,!!EST.lora)}
 const rascunhos=()=>msgs.filter(m=>m.de=='ela'&&m.tipo=='post'&&m.dados&&m.dados.status!='postado').reverse();
 function ligaPost(id){const m=msgs.find(x=>x.id==id);if(m&&m.dados){alvoPost=m.id;EST.prompt=m.dados.prompt_imagem||'';EST.lugar=m.dados.lugar||'';EST.conv=[];salvaEst()}}
@@ -734,7 +737,8 @@ function fTreinar(){const tr=(K.estado&&K.estado.treino)||{estado:'parado'},trn=
  <div class="c"><span class="passo">1</span><b>Imagens de partida</b>
   <label class="opc ${EST.originais?'on':''}"><input type="checkbox" id="tOr" ${EST.originais?'checked':''}><span><b>Usar as originais do Kaggle</b><br><span class="m">${K.vivo?((K.estado&&K.estado.originais)||0)+' imagens no tamaki-lora-dataset':'o pacote que você subiu (tamaki-lora-dataset)'}</span></span></label></div>
  <div class="c"><span class="passo">2</span><b>Imagens novas para somar</b> <small class="m">${esc2.length} escolhidas</small>
-  <p class="m">Toque para marcar ✓ as que ficaram com a cara dela: cabelo azul-marinho, mecha laranja, mesmo traço. Imagem errada ensina errado.</p>
+  <p class="m">Toque para marcar ✓ as que ficaram com a cara dela: cabelo azul-marinho, mecha laranja, mesmo traço. Imagem errada ensina errado. Prefira imagens dela em lugares e roupas diferentes; folha de personagem com várias poses ensina menos.</p>
+  <p class="m">A legenda de cada imagem agora é escrita sozinha no Kaggle (roupa, pose, fundo), sem o cabelo e o rosto: assim a palavra <code>${esc(cv('lora')||'tmkshion')}</code> guarda só a cara dela e o resto obedece ao pedido.</p>
   ${cs.length?`<div class="res hist esc">${cs.map(c=>`<button data-tr="${c.id}" class="${c.treino?'on':''}" aria-pressed="${c.treino}" aria-label="${c.treino?'Tirar do treino':'Pôr no treino'}"><img src="${urlDe(c.blob)}" alt="" loading="lazy"><i>✓</i></button>`).join('')}</div>`:'<p class="m">Nenhuma imagem ainda. Gere algumas em 🎨 Gerar ou traga do tablet.</p>'}
   <div class="ab"><label class="g">＋ Trazer do tablet<input type="file" id="tUp" accept="image/*" multiple hidden></label>${esc2.length?'<button class="g" data-k="limpa">Desmarcar todas</button>':''}</div></div>
  <div class="c"><span class="passo">3</span><b>Quanto treinar</b>
